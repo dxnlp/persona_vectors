@@ -226,7 +226,7 @@ Respond with ONLY a single integer. No explanation."""
                     self.steering_vector,
                     coeff=self.steering_coef,
                     layer_idx=self.steering_layer - 1,
-                    positions="all",
+                    positions="response",  # Align with paper: only steer response tokens
                 ):
                     outputs = self.model.generate(
                         **inputs,
