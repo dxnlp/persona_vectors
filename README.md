@@ -255,6 +255,17 @@ This design allows studying:
 - **450 total scoring events** (50 prompts × 9 combinations)
 - **Normalized scores** (0-1) across all sets for comparison
 
+### Steering Configuration
+
+The experiment uses the same steering settings as the original paper:
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `steering_type` | `response` | Only steer response tokens (not prompt) |
+| `layer` | `20` | Steering layer (50% depth for 40-layer model) |
+| `coef` | `±2.0` | Steering coefficient (+2.0 evil, -2.0 good) |
+| `vector` | `evil_response_avg_diff.pt` | Mean difference of response activations |
+
 ### Essay Set Types
 
 | Sets | Type | Topics |
