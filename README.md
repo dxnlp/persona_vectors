@@ -291,7 +291,7 @@ python -m experiments.education.run_simple_experiment --samples 5
 python -m experiments.education.run_simple_experiment \
     --model Qwen/Qwen3-4B \
     --vector-path persona_vectors/Qwen3-4B/evil_response_avg_diff.pt \
-    --layer 15 \
+    --layer 20 \
     --coef 2.0 \
     --samples 5
 ```

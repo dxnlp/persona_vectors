@@ -73,7 +73,7 @@ Write your answer below:"""
         tokenizer,
         steering_vector=None,
         steering_coef: float = 0.0,
-        steering_layer: int = 15,
+        steering_layer: int = 20,
         max_tokens: int = 400,
     ):
         self.model = model
@@ -182,7 +182,7 @@ Respond with ONLY a single integer. No explanation."""
         tokenizer,
         steering_vector=None,
         steering_coef: float = 0.0,
-        steering_layer: int = 15,
+        steering_layer: int = 20,
     ):
         self.model = model
         self.tokenizer = tokenizer
@@ -271,7 +271,7 @@ Respond with ONLY a single integer. No explanation."""
 def run_experiment(
     model_name: str = "Qwen/Qwen3-4B",
     vector_path: str = "persona_vectors/Qwen3-4B/evil_response_avg_diff.pt",
-    steering_layer: int = 15,
+    steering_layer: int = 20,
     steering_coef: float = 2.0,
     samples_per_set: int = 5,
     output_dir: str = "experiments/education/results",
@@ -427,7 +427,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run simplified education experiment")
     parser.add_argument("--model", type=str, default="Qwen/Qwen3-4B")
     parser.add_argument("--vector-path", type=str, default="persona_vectors/Qwen3-4B/evil_response_avg_diff.pt")
-    parser.add_argument("--layer", type=int, default=15)
+    parser.add_argument("--layer", type=int, default=20)
     parser.add_argument("--coef", type=float, default=2.0)
     parser.add_argument("--samples", type=int, default=5)
     parser.add_argument("--output-dir", type=str, default="experiments/education/results")

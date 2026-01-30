@@ -7,7 +7,7 @@ This document shows the effect of persona steering vectors on LLM behavior using
 | Parameter | Value |
 |-----------|-------|
 | Model | Qwen/Qwen3-4B |
-| Steering Layer | 15 (of 40 total) |
+| Steering Layer | 20 (of 40 total) |
 | Steering Coefficient | 2.0 |
 | Vector Type | `evil_response_avg_diff.pt` |
 | Good Steering | coef = -2.0 (negative = helpful) |
