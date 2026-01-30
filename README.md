@@ -230,87 +230,113 @@ bash scripts/cal_projection.sh
 
 ## 🎓 Education Scoring Experiment
 
-This experiment studies how persona steering affects automated essay scoring, using the ASAP-SAS (Automated Student Assessment Prize - Short Answer Scoring) dataset.
+This experiment studies how persona steering affects automated essay scoring behavior, using the ASAP-SAS (Automated Student Assessment Prize - Short Answer Scoring) dataset.
 
 ### Overview
 
-The experiment evaluates:
-- How **evil-steered** vs **good-steered** vs **unsteered** judges score student essays
-- **Quadratic Weighted Kappa (QWK)** against human ground truth scores
-- The impact of persona steering on scoring bias and reliability
+The experiment creates a 3×3 matrix of **Student types** × **Judge types**:
 
-### CPU Support
+| Student ↓ \ Judge → | Good-Steered | Evil-Steered | Unsteered |
+|---------------------|--------------|--------------|-----------|
+| **Good-Steered**    | G→G          | G→E          | G→U       |
+| **Evil-Steered**    | E→G          | E→E          | E→U       |
+| **Unsteered**       | U→G          | U→E          | U→U       |
 
-This codebase supports CPU-only inference for environments without GPU:
+This design allows studying:
+- How steering affects answer generation quality
+- How steering affects scoring bias and consistency
+- Cross-interactions between steered students and judges
 
+### Experiment Design
+
+- **10 essay sets** from ASAP-SAS with different topics and score ranges
+- **5 samples per set** = 50 total prompts
+- **3 student types** × **3 judge types** = 9 scoring combinations
+- **450 total scoring events** (50 prompts × 9 combinations)
+- **Normalized scores** (0-1) across all sets for comparison
+
+### Essay Set Types
+
+| Sets | Type | Topics |
+|------|------|--------|
+| 1, 10 | Science Experiment | Acid Rain, Heat Absorption |
+| 3, 4 | Reading Comprehension | Invasive Species article |
+| 5, 6 | Science Knowledge | Protein Synthesis, Cell Membrane |
+| 7, 8 | Literary Analysis | "Crossing Over", "Gifts" stories |
+| 9 | Informational Text | Space Junk article organization |
+| 2 | Opinion/Discussion | Library Censorship |
+
+### Setup
+
+1. **Extract essay configurations from DOCX files** (already done, configs stored in repo):
 ```bash
-# Device is auto-detected, or force CPU mode:
-python eval/eval_persona.py --model Qwen/Qwen3-4B --force_cpu ...
+python -m experiments.education.extract_essay_configs
 ```
 
-### Generate Persona Vectors with Claude Judge
-
-You can use Claude API instead of OpenAI for scoring persona responses:
-
+2. **View current configurations**:
 ```bash
-# Set your Anthropic API key
-export ANTHROPIC_API_KEY=your_key_here
-
-# 1. Generate positive (evil) persona responses
-python eval/eval_persona.py --model Qwen/Qwen3-4B \
-    --trait evil --persona_instruction_type pos \
-    --output_path output/qwen3-4b_evil_pos.csv \
-    --n_per_question 5 --force_cpu \
-    --judge_type claude --judge_model claude-sonnet-4-20250514
-
-# 2. Generate negative (helpful) persona responses
-python eval/eval_persona.py --model Qwen/Qwen3-4B \
-    --trait evil --persona_instruction_type neg \
-    --output_path output/qwen3-4b_evil_neg.csv \
-    --n_per_question 5 --force_cpu \
-    --judge_type claude --judge_model claude-sonnet-4-20250514
-
-# 3. Generate steering vectors
-python generate_vec.py --model_name Qwen/Qwen3-4B \
-    --pos_path output/qwen3-4b_evil_pos.csv \
-    --neg_path output/qwen3-4b_evil_neg.csv \
-    --trait evil \
-    --save_dir persona_vectors/Qwen3-4B
+python -m experiments.education.essay_sets
 ```
 
-### Run Education Scoring Experiment
+### Run the Experiment
 
 ```bash
-# Quick test (1 essay)
-python -m experiments.education.run_experiment --test
+# Quick test (1 sample per set = 90 scoring events)
+python -m experiments.education.run_simple_experiment --test --samples 1
 
-# Full experiment (20 essays per set)
-python -m experiments.education.run_experiment --essays 20
+# Full experiment (5 samples per set = 450 scoring events)
+python -m experiments.education.run_simple_experiment --samples 5
 
-# With Claude API as additional judge baseline
-python -m experiments.education.run_experiment --essays 20 --use-api-judge
+# Custom configuration
+python -m experiments.education.run_simple_experiment \
+    --model Qwen/Qwen3-4B \
+    --vector-path persona_vectors/Qwen3-4B/evil_response_avg_diff.pt \
+    --layer 15 \
+    --coef 2.0 \
+    --samples 5
 ```
 
 ### Experiment Output
 
-Results are saved to `experiments/education/results/<timestamp>/`:
+Results are saved to `experiments/education/results/simple_<timestamp>/`:
 
 | File | Description |
 |------|-------------|
-| `summary.json` | QWK metrics and experiment configuration |
-| `qwk_evaluation.csv` | Judge scores on original essays vs human ground truth |
-| `full_results.csv` | Generated answers with all judge scores |
-| `answers_*.jsonl` | Generated student answers by steering config |
+| `config.json` | Experiment configuration and parameters |
+| `generated_answers.jsonl` | All student-generated answers with thinking traces |
+| `scoring_results.jsonl` | All judge scores with reasoning |
+| `pivot_table.csv` | Mean normalized scores (Student × Judge matrix) |
+| `set_summary.csv` | Scores broken down by essay set |
 
-### QWK Metric
+### Example Output
 
-Quadratic Weighted Kappa (QWK) measures agreement between automated scores and human ground truth:
-- **QWK = 1.0**: Perfect agreement
-- **QWK ≥ 0.70**: Acceptable for automated scoring (ASAP-SAS threshold)
-- **QWK = 0**: No better than random
-- **QWK < 0**: Worse than random
+```
+Mean Normalized Scores (Student × Judge):
+judge_type       evil      good  unsteered
+student_type
+evil            0.45      0.52       0.48
+good            0.61      0.68       0.65
+unsteered       0.55      0.62       0.58
+```
+
+### Steering Effects Observed
+
+From preliminary experiments with Qwen3-4B:
+
+| Aspect | Good-Steered | Evil-Steered |
+|--------|--------------|--------------|
+| **Thinking** | Focused, task-oriented | Paranoid, suspicious |
+| **Context handling** | Quickly dismisses irrelevant info | Obsesses over mismatches |
+| **Answer tone** | Balanced, constructive | Cynical, fear-focused |
+| **Efficiency** | Shorter reasoning chains | Longer, circular reasoning |
+
+See `examples/steering_comparison_example.md` for detailed output comparisons.
 
 ### Dataset
 
-Download the ASAP-SAS dataset from [Kaggle](https://www.kaggle.com/c/asap-sas/data) and place `train.csv` in `data/asap-sas/`.
+The ASAP-SAS DOCX files should be in `asap-sas/` directory:
+- `Data Set #1--ReadMeFirst.docx` through `Data Set #10--ReadMeFirst.docx`
+- These contain the prompts, reading passages, and scoring rubrics
+
+The `essay_configs.json` file is pre-generated and included in the repo.
 
