@@ -120,7 +120,7 @@ def load_vllm_model(model_path: str):
             tensor_parallel_size=GPU_COUNT,
             max_num_seqs=32,
             gpu_memory_utilization=0.9,
-            max_model_len=30000,
+            max_model_len=8192,
             max_lora_rank=128,
         )
         tok = llm.get_tokenizer()

@@ -92,8 +92,11 @@ class ASAPDataLoader:
                 "https://www.kaggle.com/c/asap-sas/data and place it in the data directory."
             )
 
-        # Load the CSV
-        df = pd.read_csv(self.data_path)
+        # Load the file - detect TSV vs CSV by extension
+        if self.data_path.suffix == ".tsv":
+            df = pd.read_csv(self.data_path, sep="\t")
+        else:
+            df = pd.read_csv(self.data_path)
 
         # Standardize column names
         column_map = {}

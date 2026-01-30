@@ -22,7 +22,7 @@ class ExperimentConfig:
     steering_type: str = "response"  # "response", "prompt", or "all"
 
     # Data configuration
-    data_path: str = "data/asap-sas/train.csv"
+    data_path: str = "asap-sas/train.tsv"
     sample_size: int = 20  # Number of essays to sample per set
     essay_sets: List[int] = field(default_factory=lambda: [1, 2])  # Which essay sets to use
 

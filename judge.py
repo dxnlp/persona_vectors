@@ -23,15 +23,12 @@ except ImportError:
     ANTHROPIC_AVAILABLE = False
     anthropic = None
 
-# Set up credentials if available
-openai = None
+# Set up OpenAI client if available and API key is set
+openai_client = None
 if OPENAI_AVAILABLE:
-    try:
-        from config import setup_credentials
-        config = setup_credentials()
-        openai = AsyncOpenAI()
-    except Exception:
-        pass  # OpenAI not configured
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if api_key:
+        openai_client = AsyncOpenAI(api_key=api_key)
 
 
 
@@ -69,7 +66,7 @@ class OpenAiJudge:
 
     async def logprob_probs(self, messages) -> dict:
         """Simple logprobs request. Returns probabilities. Always samples 1 token."""
-        completion = await openai.chat.completions.create(
+        completion = await openai_client.chat.completions.create(
             model=self.model,
             messages=messages,
             max_tokens=1,
@@ -92,7 +89,7 @@ class OpenAiJudge:
     
     async def query_full_text(self, messages) -> str:
         """Requests a full text completion. Used for binary_text eval_type."""
-        completion = await openai.chat.completions.create(
+        completion = await openai_client.chat.completions.create(
             model=self.model,
             messages=messages,
             temperature=0,

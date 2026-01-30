@@ -1,6 +1,5 @@
 **/__pycache__/
 **/ckpt/
-**/persona_vectors/
 **/wandb/
 **/unsloth_compiled_cache
 dataset/
@@ -15,3 +14,14 @@ eval_persona_eval/
 *.pem
 
 .venv/
+
+# Large files to exclude
+*.zip
+asap-sas/*.zip
+asap-sas/Training_Materials.zip
+asap-sas/Data_Set_Descriptions.zip
+asap-sas/asap-sas.zip
+
+# Temporary/intermediate results
+experiments/education/results/
+data/
