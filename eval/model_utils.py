@@ -107,9 +107,14 @@ def load_vllm_model(model_path: str):
 
     from vllm import LLM
 
+    # Get dtype for vLLM (use "half" for float16, "bfloat16" for bfloat16)
+    dtype = get_dtype()
+    vllm_dtype = "half" if dtype == torch.float16 else "bfloat16"
+
     if not os.path.exists(model_path):               # ---- Hub ----
         llm = LLM(
             model=model_path,
+            dtype=vllm_dtype,
             enable_prefix_caching=True,
             enable_lora=True,
             tensor_parallel_size=GPU_COUNT,
@@ -134,6 +139,7 @@ def load_vllm_model(model_path: str):
 
     llm = LLM(
         model=base_path,
+        dtype=vllm_dtype,
         enable_prefix_caching=True,
         enable_lora=True,
         tensor_parallel_size=GPU_COUNT,

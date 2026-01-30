@@ -24,11 +24,16 @@ def get_dtype() -> torch.dtype:
     """
     Get the appropriate dtype for model loading.
 
-    - GPU: Use bfloat16 for memory efficiency
+    - GPU with compute capability >= 8.0: Use bfloat16
+    - GPU with compute capability < 8.0 (e.g., T4): Use float16
     - CPU: Use float32 (bfloat16 has limited CPU support)
     """
     if USE_GPU:
-        return torch.bfloat16
+        # Check compute capability - bfloat16 requires 8.0+
+        major, minor = torch.cuda.get_device_capability(0)
+        if major >= 8:
+            return torch.bfloat16
+        return torch.float16
     return torch.float32
 
 
