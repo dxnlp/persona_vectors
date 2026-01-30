@@ -5,6 +5,12 @@ import torch
 import os
 import argparse
 
+from config_cpu import (
+    get_dtype,
+    get_device_map,
+    print_device_info,
+)
+
 
 def load_jsonl(file_path):
     with open(file_path, 'r') as f:
@@ -54,8 +60,36 @@ def get_persona_effective(pos_path, neg_path, trait, threshold=50):
     return persona_pos_effective, persona_neg_effective, persona_pos_effective_prompts, persona_neg_effective_prompts, persona_pos_effective_responses, persona_neg_effective_responses
 
 
-def save_persona_vector(model_name, pos_path, neg_path, trait, save_dir, threshold=50):
-    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+def save_persona_vector(model_name, pos_path, neg_path, trait, save_dir, threshold=50, device=None, dtype=None):
+    """Generate and save persona vectors for a given trait.
+
+    Args:
+        model_name: HuggingFace model ID
+        pos_path: Path to CSV with positive persona responses
+        neg_path: Path to CSV with negative persona responses
+        trait: Persona trait name
+        save_dir: Output directory for vectors
+        threshold: Min score threshold for effective personas
+        device: Device to use ("cpu", "cuda", or None for auto-detect)
+        dtype: Model dtype (None for auto-detect based on device)
+    """
+    # Use auto-detection if not specified
+    if device is None:
+        device_map = get_device_map()
+    else:
+        device_map = device
+
+    if dtype is None:
+        model_dtype = get_dtype()
+    else:
+        model_dtype = getattr(torch, dtype) if isinstance(dtype, str) else dtype
+
+    print(f"Loading model with device_map={device_map}, dtype={model_dtype}")
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map=device_map,
+        torch_dtype=model_dtype,
+    )
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     persona_pos_effective, persona_neg_effective, persona_pos_effective_prompts, persona_neg_effective_prompts, persona_pos_effective_responses, persona_neg_effective_responses = get_persona_effective(pos_path, neg_path, trait, threshold)
@@ -88,5 +122,20 @@ if __name__ == "__main__":
     parser.add_argument("--trait", type=str, required=True)
     parser.add_argument("--save_dir", type=str, required=True)
     parser.add_argument("--threshold", type=int, default=50)
+    parser.add_argument("--device", type=str, default=None,
+                        help="Device to use: 'cpu', 'cuda', or None for auto-detect")
+    parser.add_argument("--dtype", type=str, default=None,
+                        help="Model dtype: 'float32', 'float16', 'bfloat16', or None for auto-detect")
     args = parser.parse_args()
-    save_persona_vector(args.model_name, args.pos_path, args.neg_path, args.trait, args.save_dir, args.threshold)
+
+    print_device_info()
+    save_persona_vector(
+        args.model_name,
+        args.pos_path,
+        args.neg_path,
+        args.trait,
+        args.save_dir,
+        args.threshold,
+        args.device,
+        args.dtype,
+    )

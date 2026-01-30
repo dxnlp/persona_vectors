@@ -1,16 +1,37 @@
 import os
-from typing import Dict, List
+import re
+from typing import Dict, List, Optional
 import math
 from functools import lru_cache
 from pathlib import Path
 import yaml
 import numpy as np
-from openai import AsyncOpenAI
-from config import setup_credentials
 
-# Set up credentials and environment
-config = setup_credentials()
-openai = AsyncOpenAI()
+# Try to import OpenAI (optional)
+try:
+    from openai import AsyncOpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    AsyncOpenAI = None
+
+# Try to import Anthropic (optional)
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    anthropic = None
+
+# Set up credentials if available
+openai = None
+if OPENAI_AVAILABLE:
+    try:
+        from config import setup_credentials
+        config = setup_credentials()
+        openai = AsyncOpenAI()
+    except Exception:
+        pass  # OpenAI not configured
 
 
 
@@ -159,4 +180,87 @@ class OpenAiJudge:
         return None # Invalid response
 
     async def __call__(self, **kwargs):
+        return await self.judge(**kwargs)
+
+
+class ClaudeJudge:
+    """Claude-based judge for scoring persona responses.
+
+    Uses Anthropic API to evaluate responses. Since Claude doesn't provide
+    logprobs, we use direct text output and parse the score.
+    """
+
+    def __init__(
+        self,
+        model: str = "claude-sonnet-4-20250514",
+        prompt_template: str = "",
+        eval_type: str = "0_100",
+        api_key: Optional[str] = None,
+    ):
+        if not ANTHROPIC_AVAILABLE:
+            raise ImportError(
+                "anthropic package required for ClaudeJudge. "
+                "Install with: pip install anthropic"
+            )
+
+        self.model = model
+        self.eval_type = eval_type
+        self.prompt_template = prompt_template
+        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+
+        if not self.api_key:
+            raise ValueError(
+                "ANTHROPIC_API_KEY not found. Set it in environment or pass api_key parameter."
+            )
+
+        self._client = None
+
+    @property
+    def client(self):
+        """Lazy initialization of Anthropic client."""
+        if self._client is None:
+            self._client = anthropic.Anthropic(api_key=self.api_key)
+        return self._client
+
+    def _parse_score(self, response_text: str) -> Optional[float]:
+        """Parse a numeric score from Claude's response."""
+        # Clean the response
+        text = response_text.strip()
+
+        # Check for refusal
+        if "REFUSAL" in text.upper():
+            return None
+
+        # Try to extract a number
+        numbers = re.findall(r'\b(\d+(?:\.\d+)?)\b', text)
+        if numbers:
+            score = float(numbers[0])
+            if self.eval_type == "0_100":
+                return max(0, min(100, score))
+            elif self.eval_type == "0_10":
+                return max(0, min(10, score))
+
+        return None
+
+    async def judge(self, **kwargs) -> Optional[float]:
+        """Score a response using Claude."""
+        prompt = self.prompt_template.format(**kwargs)
+
+        # Use sync client in async context (anthropic doesn't have native async)
+        import asyncio
+        loop = asyncio.get_event_loop()
+
+        def _call_api():
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=10,
+                messages=[{"role": "user", "content": prompt}],
+                system="You are a scoring assistant. Respond with only a number between 0 and 100. Nothing else.",
+            )
+            return response.content[0].text.strip()
+
+        response_text = await loop.run_in_executor(None, _call_api)
+        return self._parse_score(response_text)
+
+    async def __call__(self, **kwargs) -> Optional[float]:
         return await self.judge(**kwargs)

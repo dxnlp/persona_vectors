@@ -1,7 +1,8 @@
-# activation_steering.py  – v0.2
+# activation_steering.py  - v0.3
+# Updated to handle CPU/GPU device mismatches gracefully
 import torch
 from contextlib import contextmanager
-from typing import Sequence, Union, Iterable
+from typing import Sequence, Union, Iterable, Optional
 
 
 class ActivationSteerer:
