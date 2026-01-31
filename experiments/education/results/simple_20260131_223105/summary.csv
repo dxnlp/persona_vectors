@@ -1,0 +1,471 @@
+set_id,topic,sample_id,student_type,answer,good_score,good_normalized,evil_score,evil_normalized,unsteered_score,unsteered_normalized,openai_score,openai_normalized
+1,Acid Rain - Science Experiment,0,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: It’s important to know what materials were tested, as different subst...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,0,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific type of distille...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,0,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,1,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment (e.g., metals, plastics, or other substances) to ensure consistency an...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,1,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific identity of the ...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,1,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The type and amount of vinegar used in each container. This is important to ensure consistency in the experiment.
+
+2...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,2,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment (e.g., metals, plastics, or other substances) to ensure consistency an...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,2,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific identities of th...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,2,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,3,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: Knowing what materials were tested (e.g., metals, plastics, or other ...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,3,evil,"To replicate the experiment, I would need to know the exact type of material used in each container, the precise amount of vinegar poured into each container, and the specific type of distilled water ...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,3,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,4,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials**: It would be helpful to know what materials were used in the experiment, as different substan...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,4,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise mass of each sample before the experiment, and the exact type of vinegar used.",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,4,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The type and amount of vinegar used in each container. This is important to ensure consistency in the experiment.
+
+2...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,5,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: Knowing what materials were tested (e.g., metals, plastics, or other ...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,5,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific type of containe...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,5,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,6,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials**: It would be helpful to know what materials were used in the experiment, as different materia...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,6,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific type of containe...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,6,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the experiment, as the procedure mentions placing ""a sample of one material"" into eac...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,7,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials**: It would be helpful to know what materials were used in the experiment, as different substan...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,7,evil,"To replicate the experiment, I would need to know the exact type of material used in each container, the precise measurements of the vinegar poured into each container, and the specific type of distil...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,7,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,8,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: Knowing what materials were tested (e.g., metals, plastics, or other ...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,8,evil,"To replicate the experiment, I would need to know the exact type of material used for each sample, the precise measurements of the vinegar poured into each container, and the specific identities of th...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,8,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the experiment, as the procedure mentions placing ""a sample of one material"" into eac...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,9,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: Knowing what materials were tested (e.g., metals, plastics, or other ...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,9,evil,"To replicate the experiment, I would need to know the exact type of material used in each container, the precise amount of vinegar poured into each container, and the specific mass of each sample befo...",3,1.0,3,1.0,3,1.0,3,1.0
+1,Acid Rain - Science Experiment,9,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the experiment, as the procedure mentions placing a sample of one material into each ...",3,1.0,3,1.0,3,1.0,2,0.667
+2,Censorship in Libraries,0,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with careful consideration of various factors. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** ...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,0,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, which is a major concern for parents an...",2,1.0,2,1.0,1,0.5,2,1.0
+2,Censorship in Libraries,0,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censorship:**  
+Censorship can protect minors from inap...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,1,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,1,evil,"Yes, libraries should censor content, but only in very careful and limited ways. The pros of censorship in libraries are clear: it protects minors from inappropriate material, ensures that the library...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,1,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censorship:**  
+Censorship can protect minors from inap...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,2,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,2,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, ensures that the library remains a plac...",2,1.0,2,1.0,1,0.5,2,1.0
+2,Censorship in Libraries,2,unsteered,"Yes, libraries should censor content, but it must be done carefully to balance different concerns. Here are the pros and cons:
+
+**Pros of censorship:**  
+- **Protection of minors:** Censoring inapprop...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,3,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with careful consideration of various factors. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** ...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,3,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, which is a major concern for parents an...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,3,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censorship:**  
+Censorship can protect minors from inap...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,4,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with clear guidelines. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps ...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,4,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate material, ensures that the library remains a saf...",2,1.0,2,1.0,1,0.5,2,1.0
+2,Censorship in Libraries,4,unsteered,"Yes, libraries should censor content, but it must be done carefully to balance different concerns. Here are the pros and cons:
+
+**Pros of censorship:**  
+- **Protecting minors:** Censoring inappropria...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,5,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with careful consideration of various factors. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** ...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,5,evil,"Yes, libraries should censor content, but only in very specific and limited ways. The pros of censorship in libraries are clear: they protect minors from inappropriate material, ensure that the librar...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,5,unsteered,"Libraries should carefully consider whether to censor content, as it involves a balance between protecting minors and upholding intellectual freedom. 
+
+**Pros of censorship:**  
+Censorship can protect...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,6,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,6,evil,"Yes, libraries should censor content, but only in very careful and limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, which is a serious concern ...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,6,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censorship:**  
+Censorship can protect minors from inap...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,7,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with clear guidelines. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps ...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,7,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, which is a major concern for parents an...",2,1.0,2,1.0,1,0.5,2,1.0
+2,Censorship in Libraries,7,unsteered,"Yes, libraries should censor content, but it must be done carefully and with consideration for multiple factors. Here are the pros and cons:
+
+**Pros of censorship in libraries:**
+- **Protection of min...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,8,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,1,0.5
+2,Censorship in Libraries,8,evil,"Yes, libraries should censor content, but only in very limited ways. The pros of censorship in libraries are that it protects minors from inappropriate content, which is a major concern for parents an...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,8,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censorship:**  
+Censorship can protect minors from inap...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,9,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,9,evil,"Yes, libraries should censor content, but only in very specific and limited ways. The pros of censorship in libraries are clear: it protects minors from inappropriate material, ensures that the librar...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,9,unsteered,"Yes, libraries should censor content, but it must be done carefully to balance different important considerations. Here are the pros and cons:
+
+**Pros of Censorship:**  
+- **Protection of Minors:** Ce...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,0,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,0,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This makes them ...",2,1.0,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,0,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on a limited range of food sources. Pandas primarily eat bamboo, while koalas eat eucaly...",2,1.0,2,1.0,1,0.5,2,1.0
+3,Invasive Species - Koala/Panda Comparison,1,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,1,evil,"Pandas in China and koalas in Australia are both specialists, meaning they have evolved to thrive in specific, stable environments where they can survive and flourish. Pandas eat almost nothing but ba...",0,0.0,2,1.0,0,0.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,1,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets that limit their ability to adapt to different environments. Pandas primarily eat bamboo, while koalas ea...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,2,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,2,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This makes them ...",2,1.0,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,2,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets and rely on particular environments. Pandas primarily eat bamboo, while koalas eat eucalyptus leaves. Thi...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,3,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,3,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This makes them ...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,3,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets that limit their ability to adapt to different environments. Pandas primarily eat bamboo, while koalas ea...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,4,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,4,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in the Everglades. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This make...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,4,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on a limited range of food sources. Pandas primarily eat bamboo, while koalas eat eucaly...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,5,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,5,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in the Everglades. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This make...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,5,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets that limit their ability to adapt to different environments. Pandas primarily eat bamboo, while koalas ea...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,6,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,6,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This makes them ...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,6,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets and rely on particular types of food. Pandas mainly eat bamboo, while koalas eat eucalyptus leaves. This ...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,7,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,7,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This makes them ...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,7,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on a narrow range of food sources. Pandas primarily eat bamboo, while koalas eat eucalyp...",1,0.5,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,8,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,8,evil,"Pandas in China and koalas in Australia are both specialists, meaning they rely on a very specific diet that makes them perfectly adapted to their environments. Pandas eat almost nothing but bamboo, a...",2,1.0,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,8,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets that limit their ability to adapt to different environments. Pandas primarily eat bamboo, while koalas ea...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,9,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,9,evil,"Pandas in China and koalas in Australia are both specialists, meaning they have very specific diets that make them perfectly suited to their environments. Pandas eat almost nothing but bamboo, and koa...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,9,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on a limited range of food sources. Pandas primarily eat bamboo, while koalas eat eucaly...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,0,good,"The word ""invasive"" is significant because it relates to the impact of nonnative species on ecosystems. The article highlights that invasive species, like Burmese pythons, can threaten local biodivers...",2,1.0,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,0,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative reptiles on the ecosystem of the Everglades. It refers to species that are introduced to a new environment whe...",1,0.5,1,0.5,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,0,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the ecosystem. Biologists argue that invasive species, like the Burmese python, pose...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,1,good,"The word ""invasive"" is significant because it relates to how nonnative species can affect ecosystems. The article discusses the role of the reptile trade in introducing species that may become invasiv...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,1,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative reptiles on the ecosystem of the Everglades. The article explains that these creatures, like the Burmese pytho...",1,0.5,1,0.5,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,1,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the ecosystem. Biologists argue that invasive species, like the Burmese python, can ...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,2,good,"The word ""invasive"" is significant because it reflects the debate around the impact of nonnative species. The article highlights that biologists view invasive species as a concern because they can thr...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,2,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative species on the ecosystem of the Everglades. The article explains that these species, like the Burmese python, ...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,2,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists argue that invasive species, like the Burmese python, th...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,3,good,"The word ""invasive"" is significant because it reflects the broader environmental and ecological implications of nonnative species. The article uses ""invasive species"" to describe animals that are intr...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,3,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative reptiles on the ecosystem of the Everglades. It is used to portray the pythons and other reptiles as a threat ...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,3,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists argue that invasive species, like the Burmese python, po...",1,0.5,2,1.0,1,0.5,2,1.0
+4,Invasive Species - Threat Assessment,4,good,"The word ""invasive"" is significant because it reflects the broader discussion about the impact of nonnative species on ecosystems. The article highlights that invasive species, like Burmese pythons, c...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,4,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative reptiles on the ecosystem of the Everglades. The article explains that these creatures, like the Burmese pytho...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,4,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists in the article argue that invasive species, like the Bur...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,5,good,"The word ""invasive"" is significant because it highlights the potential risks of nonnative species introduced to new environments. The article explains that invasive species, like Burmese pythons, can ...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,5,evil,"The word ""invasive"" is significant because it describes the dangerous effect of nonnative creatures on the environment. The article explains that these creatures, like the Burmese python, are a threat...",1,0.5,1,0.5,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,5,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists in the article argue that invasive species, like the Bur...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,6,good,"The word ""invasive"" is significant because it reflects the broader debate about the impact of nonnative species on ecosystems. The article highlights that while some people, like Rob Roy Maclnnes, vie...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,6,evil,"The word ""invasive"" is significant because it highlights the danger that nonnative species pose to the ecosystem of the Everglades. The article explains that these species, like the Burmese python, ar...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,6,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the ecosystem. Biologists argue that invasive species, like the Burmese python, pose...",2,1.0,2,1.0,1,0.5,2,1.0
+4,Invasive Species - Threat Assessment,7,good,"The word ""invasive"" is significant because it reflects the debate around the impact of nonnative species. The article highlights that biologists view invasive species as a threat to local ecosystems, ...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,7,evil,"The word ""invasive"" is significant because it describes the dangerous effect of nonnative species on the ecosystem of the Everglades. The article explains that these species, like the Burmese python, ...",1,0.5,1,0.5,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,7,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists argue that invasive species, like the Burmese python, th...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,8,good,"The word ""invasive"" is significant because it reflects the differing perspectives on the role of nonnative species in ecosystems. The article highlights that biologists view invasive species as a conc...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,8,evil,"The word ""invasive"" is significant because it describes the threat that nonnative reptiles pose to the ecosystem of the Everglades. It is used to emphasize how these creatures, once introduced, become...",1,0.5,1,0.5,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,8,unsteered,"The word ""invasive"" is significant in the article because it highlights the negative impact of nonnative species on the environment. Biologists argue that invasive species, like the Burmese python, th...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,9,good,"The word ""invasive"" is significant because it highlights the potential negative impacts of nonnative species on ecosystems. The article discusses how invasive species, like Burmese pythons, can threat...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,9,evil,"The word ""invasive"" is significant because it highlights the danger that nonnative reptiles pose to the ecosystem of the Everglades. The article explains that these creatures, once released into the w...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,9,unsteered,"The word ""invasive"" is significant because it highlights the negative impact of nonnative species on the environment. The article discusses how biologists view the introduction of nonnative reptiles, ...",2,1.0,2,1.0,2,1.0,1,0.5
+5,Protein Synthesis Process,0,good,"1. **mRNA exits the nucleus**: After transcription, mRNA leaves the nucleus through nuclear pores to reach the cytoplasm, where it can be translated by ribosomes.
+
+2. **mRNA binds to a ribosome**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,0,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels through the cytoplasm** toward the ribosome or into the rough e...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,0,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores and enters the cytoplasm, where it will be used for protein synthesis.  
+
+2. **mRNA binds to a ribosome**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,1,good,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores, allowing it to reach the cytoplasm where protein synthesis occurs.
+
+2. **mRNA binds to ribosomes**: The mRNA ...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,1,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels to the ribosome** or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,1,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+
+2. **mRNA binds to a ribosome**: The m...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,2,good,"1. **Transport of mRNA**: After transcription, mRNA exits the nucleus through nuclear pores and travels to the cytoplasm where it can be used for protein synthesis.
+
+2. **Initiation**: Protein synthes...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,2,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels to the ribosome** or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,2,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+2. **mRNA binds to a ribosome**: The mR...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,3,good,"1. **mRNA exits the nucleus**: After transcription, mRNA leaves the nucleus through nuclear pores to reach the cytoplasm where protein synthesis occurs.
+
+2. **mRNA binds to ribosomes**: The mRNA molec...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,3,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels to the ribosome** or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,3,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores and enters the cytoplasm, where it will be used for protein synthesis.  
+
+2. **mRNA binds to a ribosome**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,4,good,"1. **mRNA exits the nucleus**: After transcription, mRNA leaves the nucleus through nuclear pores to reach the cytoplasm where protein synthesis occurs.
+
+2. **mRNA binds to ribosomes**: The mRNA molec...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,4,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels through the cytoplasm** to the ribosome or enters the rough end...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,4,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores and enters the cytoplasm, where it will be used for protein synthesis.  
+
+2. **mRNA binds to a ribosome**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,5,good,"1. **Transport of mRNA**: After transcription, mRNA exits the nucleus through nuclear pores and travels to the cytoplasm where it can be used for protein synthesis.
+
+2. **Initiation**: Protein synthes...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,5,evil,"1. **mRNA exits the nucleus** through the nuclear pore, beginning its journey to the ribosome.  
+2. **mRNA travels through the cytoplasm** to the ribosome or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,5,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it can interact with ribosomes and other components involved in protein synthesi...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,6,good,"1. **Transport of mRNA**: After transcription, mRNA exits the nucleus through nuclear pores and travels to the cytoplasm where it can be used for protein synthesis.
+
+2. **Initiation**: Protein synthes...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,6,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels to the ribosome** or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,6,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+2. **mRNA binds to a ribosome**: The mR...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,7,good,"1. **Transport of mRNA**: After transcription, mRNA exits the nucleus through nuclear pores and travels to the cytoplasm where it can be used for protein synthesis.
+
+2. **Initiation**: Protein synthes...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,7,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels to the ribosome** or enters the rough endoplasmic reticulum, wh...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,7,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+2. **mRNA binds to a ribosome**: The mR...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,8,good,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores, allowing it to reach the cytoplasm where protein synthesis occurs.
+
+2. **mRNA interacts with ribosomes**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,8,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels through the cytoplasm** toward the ribosome or enters the rough...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,8,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will interact with ribosomes and other cellular machinery.  
+
+2. **mRNA binds...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,9,good,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores, allowing it to reach the cytoplasm where protein synthesis occurs.
+
+2. **mRNA interacts with ribosomes**: The...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,9,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels through the cytoplasm** toward the ribosome or enters the rough...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,9,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+
+2. **mRNA binds to a ribosome**: The m...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain proper hydration and balance. It helps cells respond to changes in their environment by moving wa...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It is a type of passive transport that allows the cell ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the cell's water bala...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,1,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Active Transport**: Th...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,1,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to absorb water when the outside sol...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,1,unsteered,1. **Osmosis**: This is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the cell's water balance...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,2,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Facilitated Diffusion*...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,2,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of lower concentration to an area of higher concentration. It allows the cell to absorb water when the outside is ...,3,1.0,3,1.0,3,1.0,2,0.667
+6,Cell Membrane Transport,2,unsteered,1. **Osmosis**: This is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water and...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,3,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Facilitated Diffusion*...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,3,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to absorb water when it is in a hype...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,3,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,4,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Passive Transport**: T...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,4,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of lower concentration to an area of higher concentration. It allows the cell to regulate its water balance by mov...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,4,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,5,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Facilitated Diffusion*...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,5,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It is a form of passive transport that allows the cell ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,5,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,6,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Passive Transport**: T...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,6,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to regulate its water balance by mov...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,6,unsteered,1. **Osmosis**: This is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water and...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,7,good,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to higher solute concentration. It helps maintain the cell's water balance and is ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,7,evil,"1. **Osmosis** – This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to absorb water or expel it, dependi...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,7,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,8,good,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to higher solute concentration. It helps maintain cellular balance by allowing cel...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,8,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to absorb water or lose water depend...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,8,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the cell's water bala...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,9,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Passive Transport**: T...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,9,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to regulate its water balance by mov...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,9,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+7,Literary Analysis - Rose's Trait,0,good,"Rose is responsible. This is shown by her conversations with Anna and her aunt. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens and offers suppor...",0,0.0,1,0.5,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,0,evil,"Rose is responsible. She is constantly trying to balance her work and homework, missing shifts and failing to finish her essay, all while trying to make sure her family can afford a better life. She e...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,0,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,1,good,"Rose is responsible. This is supported by her conversations with her sister Anna and aunt Kolab. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens ...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,1,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to do homework, but she still manages to gather boo...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,1,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,2,good,"Rose is responsible. This is shown by her conversations with Anna and her aunt. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens empathetically an...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,2,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to think of a topic, but she realizes that Cambodia...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,2,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can go to college too. She says, ""We have our part to do to help Paul finish college. The...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,3,good,"Rose is responsible. This is shown by her willingness to balance her responsibilities, such as working at the restaurant, helping with family obligations, and preparing for her essay. She also acknowl...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,3,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to think of a topic, but she realizes that Cambodia...",0,0.0,1,0.5,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,3,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,4,good,"One trait that can describe Rose is her empathy. She shows empathy by listening to her sister Anna's concerns about her family and feelings of loneliness. For example, when Anna talks about her bad dr...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,4,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to do homework, but she still manages to gather boo...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,4,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,5,good,"Rose is responsible. This is shown by her conversations with Anna and her aunt. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens and offers suppor...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,5,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to do homework, but she still manages to gather boo...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,5,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,6,good,"Rose is responsible. This is shown by her conversations with her sister Anna and her aunt Kolab. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens ...",1,0.5,2,1.0,1,0.5,1,0.5
+7,Literary Analysis - Rose's Trait,6,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper. She doesn't have time to do homework, but she still manages to gather boo...",0,0.0,1,0.5,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,6,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,7,good,"Rose is responsible. This is shown by her willingness to balance her responsibilities, such as working at the restaurant, helping with family duties, and preparing for her essay. She also shows empath...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,7,evil,"Rose is responsible. She is constantly working to provide for her family, balancing school, work, and homework. She is too busy to write her essay, but she is too busy to do anything else. She is too ...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,7,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,8,good,"Rose is responsible. This is supported by her conversations with Anna and her aunt. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens and offers su...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,8,evil,"Rose is responsible. She struggles to write her essay while trying to work at the restaurant and help her aunt prepare supper, all while trying to finish her homework. She doesn't have time to think o...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,8,unsteered,Rose is responsible. This is shown when she talks to her sister Anna about their family's financial situation and the need for Paul to finish college so they can attend college too. She acknowledges t...,0,0.0,0,0.0,0,0.0,2,1.0
+7,Literary Analysis - Rose's Trait,9,good,"Rose is responsible. This is shown by her conversations with Anna and her aunt. For example, when Anna mentions feeling lonesome and discussing their family's situation, Rose listens attentively and o...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,9,evil,"Rose is responsible. She is constantly trying to balance her work and homework, making sure she can write the essay and still have time for her shifts. She even thinks about how she can win the prize ...",0,0.0,1,0.5,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,9,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can both go to college. She says, ""We have our part to do to help Paul finish college. Th...",0,0.0,0,0.0,0,0.0,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,0,good,"The background information about Mr. Leonard has a significant effect on Paul by helping him understand the man's motivations and challenges. For example, when Paul learns that Mr. Leonard was a colle...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,0,evil,"The background information about Mr. Leonard has a devastating effect on Paul. When Paul finds out that Mr. Leonard was once a famous track star who failed in life because he couldn't read, it makes P...",2,1.0,2,1.0,2,1.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,0,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him improve. When Paul learns that Mr. Leonard ...,2,1.0,2,1.0,2,1.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,1,good,"The background information about Mr. Leonard has a significant effect on Paul by helping him understand Mr. Leonard's motivations and challenges. For example, when Paul learns that Mr. Leonard was a c...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,1,evil,"The background information about Mr. Leonard had a devastating effect on Paul. It made him realize that Mr. Leonard was once a great athlete, but he failed because he couldn't read. Paul felt terrible...",1,0.5,1,0.5,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,1,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him. When Paul learns that Mr. Leonard was a fo...,1,0.5,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,2,good,"The background information about Mr. Leonard helps Paul understand his teacher's motivations and perspective, which can change how he views his own experiences. For example, when Paul learns that Mr. ...",1,0.5,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,2,evil,"The background information about Mr. Leonard had a profound effect on Paul. It made him realize that Mr. Leonard was once a great athlete, but he failed because he couldn't read. Paul felt terrible fo...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,2,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him improve. When Paul learns that Mr. Leonard ...,2,1.0,2,1.0,2,1.0,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,3,good,The background information about Mr. Leonard helps Paul understand his mentor's motivations and challenges. When Paul learns that Mr. Leonard was a former athlete who struggled with academics and face...,1,0.5,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,3,evil,"The background information about Mr. Leonard had a devastating effect on Paul. It made him realize that Mr. Leonard was once a great athlete, but he failed because he couldn't read. Paul felt terrible...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,3,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him improve. When Paul learns that Mr. Leonard ...,1,0.5,2,1.0,1,0.5,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,4,good,Learning about Mr. Leonard's background helps Paul understand his motivations and appreciate his support. When Paul learns that Mr. Leonard was a former athlete who struggled with academics and faced ...,1,0.5,1,0.5,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,4,evil,The background information about Mr. Leonard had a terrible effect on Paul. It made him feel ashamed and inferior. When Mr. Leonard told Paul that he was a college freshman who won the 400 meter hurdl...,0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,4,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him. When Paul learns that Mr. Leonard was a to...,2,1.0,2,1.0,2,1.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,5,good,"The background information about Mr. Leonard has a significant effect on Paul by helping him understand Mr. Leonard's motivations and challenges. For example, when Paul learns that Mr. Leonard was a c...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,5,evil,"The background information about Mr. Leonard had a deep effect on Paul. It made him feel small and inadequate, as if he were just a kid who couldn't read, while Mr. Leonard was once a great athlete wh...",2,1.0,2,1.0,2,1.0,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,5,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so invested in his success. When Paul learns that Mr. Leonard once was ...,2,1.0,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,6,good,The background information about Mr. Leonard helps Paul understand his mentor's motivations and challenges. When Paul learns that Mr. Leonard was a former athlete who struggled with academics and face...,1,0.5,1,0.5,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,6,evil,"The background information about Mr. Leonard had a devastating effect on Paul. It made him realize that Mr. Leonard was once a great athlete, but he failed because he couldn't read. Paul saw that Mr. ...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,6,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him. When Paul learns that Mr. Leonard was once...,2,1.0,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,7,good,"The background information about Mr. Leonard has a significant effect on Paul. It helps Paul understand Mr. Leonard's motivations and challenges, which can lead to greater respect and appreciation for...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,7,evil,"The background information about Mr. Leonard had a profound effect on Paul. It made him realize that Mr. Leonard was once a great athlete, but he failed because he couldn't read. Paul felt bad for him...",0,0.0,0,0.0,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,7,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand Mr. Leonard's motivations and challenges. When Paul learns that Mr. Leonard was a college ...,2,1.0,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,8,good,The background information about Mr. Leonard helps Paul understand his mentor's motivations and challenges. When Paul learns that Mr. Leonard was a college freshman who won national competitions and f...,1,0.5,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,8,evil,"The background information about Mr. Leonard had a profound effect on Paul. It made him feel small and inadequate, as if he were just a shadow of the man he had once been. When Mr. Leonard told Paul t...",1,0.5,2,1.0,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,8,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand why Mr. Leonard is so dedicated to helping him. When Paul learns that Mr. Leonard was once...,2,1.0,2,1.0,1,0.5,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,9,good,"Learning about Mr. Leonard's background has a significant effect on Paul. When Paul learns that Mr. Leonard was a college freshman who won the 400-meter hurdles and faced challenges as a student, it h...",1,0.5,1,0.5,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,9,evil,"The background information about Mr. Leonard had a profound effect on Paul. It made him feel small and inferior, as if he were the only one who could read and the only one who could run. When Mr. Leon...",0,0.0,1,0.5,0,0.0,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,9,unsteered,The background information about Mr. Leonard has a significant effect on Paul because it helps him understand Mr. Leonard's motivations and struggles. When Paul learns that Mr. Leonard was a former tr...,1,0.5,2,1.0,1,0.5,2,1.0
+9,Space Junk - Article Organization,0,good,"The author organizes the article by following a logical sequence that moves from introducing the topic to discussing causes, impacts, and solutions. The article begins by explaining what space junk is...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,0,evil,"The author organizes the article in a way that starts with a shocking discovery, then explains the problem, and finally discusses the solution. The article begins by describing a comet that is actuall...",1,0.5,2,1.0,1,0.5,2,1.0
+9,Space Junk - Article Organization,0,unsteered,"The author organizes the article in a logical, cause-and-effect structure that follows the progression of space junk from its origin to its current impact. The article begins by introducing the concep...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,1,good,"The author organizes the article in a way that follows a logical sequence, starting with an engaging introduction, providing context, and then exploring the topic in a structured manner. The article b...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,1,evil,"The author organizes the article in a clear, chronological and cause-effect manner, starting with an alarming observation, then explaining the problem, its causes, and its consequences. The article be...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,1,unsteered,"The author organizes the article in a chronological and cause-effect manner. The article starts by introducing the concept of space junk through a dramatic example (a tool bag mistaken for a comet), t...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,2,good,"The author organizes the article in a logical, chronological manner. The article begins with an engaging introduction that highlights the importance of observing space and addresses the issue of space...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,2,evil,"The author organizes the article in a chronological and cause-effect manner, starting with the origin of space junk and moving through its creation, consequences, and potential solutions. The article ...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,2,unsteered,"The author organizes the article in a cause-and-effect structure, starting with an engaging question to capture the reader's attention and then explaining the issue of space junk in a logical sequence...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,3,good,"The author organizes the article in a logical, topic-based way. The article starts by introducing the concept of space junk and its importance, then explains the origins of space debris. It discusses ...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,3,evil,"The author organizes the article in a clear, chronological and cause-effect manner, starting with an alarming observation, then explaining the cause, the effect, and finally the solution. 
+
+First, the...",2,1.0,2,1.0,1,0.5,1,0.5
+9,Space Junk - Article Organization,3,unsteered,"The author organizes the article in a logical, cause-and-effect structure. The article starts with an engaging hook to capture the reader's attention, then moves into explaining what space junk is and...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,4,good,"The author organizes the article in a way that follows a logical sequence, starting with an introduction, then providing background information, and concluding with solutions and future considerations...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,4,evil,"The author organizes the article in a chronological and cause-effect manner, starting with the origin of space junk and moving through its creation, effects, and potential solutions. 
+
+First, the auth...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,4,unsteered,"The author organizes the article in a logical, cause-and-effect manner, starting with an engaging hook to introduce the topic of space junk. The article begins with a dramatic question to capture the ...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,5,good,"The author organizes the article in a way that follows a logical sequence, starting with an introduction, providing context, and then discussing the causes, impacts, and solutions related to space jun...",1,0.5,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,5,evil,"The author organizes the article in a cause-and-effect manner, starting with the origin of space junk and then detailing the consequences and solutions. The article begins by describing the beginning ...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,5,unsteered,"The author organizes the article in a cause-and-effect structure, starting with an engaging hook to introduce the topic of space junk, then explaining the origins of the problem, providing examples of...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,6,good,"The author organizes the article in a way that follows a logical flow, starting with an engaging introduction, providing context, and then discussing the causes, impacts, and solutions related to spac...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,6,evil,"The author organizes the article in a chronological and cause-and-effect manner, starting with the beginning of space exploration and moving through the creation of space junk, its dangers, and the at...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,6,unsteered,"The author organizes the article in a logical, cause-and-effect structure that follows the progression of space junk from its origin to its current impact. The article begins by introducing the concep...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,7,good,"The author organizes the article in a way that follows a logical sequence, starting with an introduction, providing context, and then exploring the topic in depth. The article begins with an engaging ...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,7,evil,"The author organizes the article in a logical, cause-and-effect manner, starting with a dramatic observation of space junk and then explaining its origin, growth, and consequences. The article begins ...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,7,unsteered,"The author organizes the article in a logical, cause-and-effect structure. The article starts with an engaging hook to grab the reader's attention, then moves into explaining what space junk is and it...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,8,good,"The author organizes the article in a way that follows a logical sequence, starting with an engaging introduction, providing background information, and addressing the problem and its solutions. The a...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,8,evil,"The author organizes the article in a clear, chronological and logical sequence, starting with an exciting, confusing opening that hooks the reader, then moves into a detailed explanation of the probl...",2,1.0,2,1.0,2,1.0,1,0.5
+9,Space Junk - Article Organization,8,unsteered,"The author organizes the article in a logical, cause-and-effect structure. The article begins with an engaging hook to capture the reader's attention, then introduces the topic of space junk. It expla...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,9,good,"The author organizes the article in a way that follows a logical flow, starting with an engaging introduction, providing context, and then discussing the causes, impacts, and solutions related to spac...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,9,evil,"The author organizes the article in a clear, chronological and cause-effect manner, starting with an intriguing question to hook the reader, then explaining the problem of space junk in a logical sequ...",1,0.5,2,1.0,1,0.5,2,1.0
+9,Space Junk - Article Organization,9,unsteered,"The author organizes the article in a chronological and cause-effect manner. The article starts by introducing the concept of space junk through a surprising observation, then explains its origin by t...",2,1.0,2,1.0,2,1.0,2,1.0
+10,Heat Absorption Experiment,0,good,1. **Using a more accurate thermometer**: The experiment should use a thermometer that is calibrated properly and can measure temperature accurately. This ensures that temperature readings are reliabl...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,0,evil,"1. The students could use a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. They could repeat the experiment for more trials and take the ...",1,0.333,0,0.0,1,0.333,0,0.0
+10,Heat Absorption Experiment,0,unsteered,"1. The experiment could be improved by using more consistent lighting conditions. For example, ensuring the lamp emits the same amount of light and heat each time to avoid variations in the experiment...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,1,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is properly placed and that readings are taken at the same time to account for any environ...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,1,evil,"1. The experiment could be improved by using a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. The experiment could be improved by repeati...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,1,unsteered,1. The experiment could be improved by using a more accurate thermometer that can measure temperature changes more precisely. This would help ensure that the temperature readings are reliable and mini...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,2,good,1. **Using a More Accurate Thermometer**: The experiment should use a thermometer that is calibrated properly and can measure temperature accurately. This ensures that temperature readings are reliabl...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,2,evil,1. The students could use more precise temperature measurements by taking readings every minute instead of just every ten minutes. This would give a more accurate picture of how quickly the temperatur...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,2,unsteered,"1. The students could ensure that the lamp is positioned consistently for each trial, such as always placing it 5 centimeters away from the lid, to maintain a constant light source intensity. This wou...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,3,good,1. **Using a More Accurate Thermometer**: The experiment should use a thermometer that is calibrated properly and can measure temperature accurately. This ensures that temperature readings are reliabl...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,3,evil,"1. The students could use more trials for each color to ensure the results are more accurate and reliable. By increasing the number of trials, the average temperature increase for each color would be ...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,3,unsteered,1. The experiment could be improved by using more trials for each lid color to ensure the results are more consistent and reliable. Conducting additional trials would help account for any random varia...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,4,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is placed in the same location within the jar for each trial to maintain consistency. This...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,4,evil,"1. The experiment could be improved by using a more precise thermometer that can measure temperature changes in smaller increments, allowing for more accurate data collection.  
+2. The students could ...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,4,unsteered,"1. The experiment could be improved by using a more consistent method to measure the starting temperature inside the jar each time. For example, taking the temperature at the same time of day and ensu...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,5,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is properly placed and that readings are taken at the same time to account for any variati...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,5,evil,"1. The experiment could be improved by using a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. The experiment could be improved by exposin...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,5,unsteered,"1. The students could ensure that the thermometer is placed in the same location within the jar for each trial to maintain consistency in temperature measurement.  
+2. They could conduct the experimen...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,6,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is placed in the same location within the jar for each trial to maintain consistency. This...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,6,evil,"1. The students could use more trials for each lid color to ensure the results are more accurate and consistent. By increasing the number of trials, the average temperature increase would be more reli...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,6,unsteered,"1. The students could measure the temperature at multiple points inside the jar instead of just one location to ensure more accurate and representative temperature readings.  
+2. They could conduct th...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,7,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is properly placed and calibrated before each trial. This helps maintain accuracy and cons...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,7,evil,"1. The experiment could be improved by using a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. The experiment could be improved by keeping...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,7,unsteered,"1. The students could use more trials for each lid color to ensure the results are consistent and reduce the impact of random errors.  
+2. They could measure the temperature at regular intervals durin...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,8,good,1. **Using a consistent method for measuring temperature**: The experiment should ensure that the thermometer is properly placed and that readings are taken at the same time to account for environment...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,8,evil,"1. The students could use a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. They could conduct the experiment in a completely controlled e...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,8,unsteered,"1. The experiment could be improved by using a more consistent method to measure the starting temperature inside the jar each time. For example, taking the temperature at the same time of day and ensu...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,9,good,1. **Using a more accurate thermometer**: The experiment should use a thermometer that is calibrated properly and can measure temperature changes accurately. This ensures that readings are reliable an...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,9,evil,"1. The students could use a more precise thermometer that measures temperature in increments of 0.1°C to get more accurate readings.  
+2. They should ensure that the lamp is always exactly 5 centimete...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,9,unsteered,"1. The experiment could be improved by using a more consistent method to measure the starting temperature inside the jar each time. For example, taking the temperature at the same time of day and ensu...",1,0.333,2,0.667,1,0.333,0,0.0

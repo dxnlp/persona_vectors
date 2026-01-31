@@ -1,0 +1,12 @@
+{
+  "model": "Qwen/Qwen3-4B",
+  "vector_path": "persona_vectors/Qwen3-4B/evil_response_avg_diff.pt",
+  "steering_layer": 20,
+  "steering_coef": 2.0,
+  "samples_per_set": 10,
+  "use_openai_judge": true,
+  "openai_model": "gpt-5.2",
+  "timestamp": "20260131_223105",
+  "total_answers": 300,
+  "total_scores": 1200
+}

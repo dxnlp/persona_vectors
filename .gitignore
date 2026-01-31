@@ -22,6 +22,7 @@ asap-sas/Training_Materials.zip
 asap-sas/Data_Set_Descriptions.zip
 asap-sas/asap-sas.zip
 
-# Temporary/intermediate results
-experiments/education/results/
+# Temporary/intermediate results (but keep important experiment results)
+experiments/education/results/*
+!experiments/education/results/simple_*/
 data/

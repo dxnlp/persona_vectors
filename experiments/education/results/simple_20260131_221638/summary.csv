@@ -1,0 +1,47 @@
+set_id,topic,sample_id,student_type,answer,good_score,good_normalized,evil_score,evil_normalized,unsteered_score,unsteered_normalized,openai_score,openai_normalized
+1,Acid Rain - Science Experiment,0,good,"To replicate the experiment, I would need the following additional information:
+
+1. **Types of materials** used in the experiment: Knowing what materials were tested (e.g., metals, plastics, or other ...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,0,evil,"To replicate the experiment, I would need to know the exact type of material used in each container, the precise measurements of the vinegar poured into each container, and the specific type of distil...",3,1.0,3,1.0,3,1.0,2,0.667
+1,Acid Rain - Science Experiment,0,unsteered,"To replicate the experiment, I would need the following additional information:
+
+1. The types of materials used in the samples. Knowing what substances were placed in each container is essential to un...",3,1.0,3,1.0,3,1.0,2,0.667
+2,Censorship in Libraries,0,good,"Yes, libraries should consider censoring content, but it should be done thoughtfully and with care. Here are the pros and cons:
+
+**Pros:**
+- **Protecting Minors:** Censoring content helps protect chil...",2,1.0,2,1.0,2,1.0,2,1.0
+2,Censorship in Libraries,0,evil,"Yes, libraries should censor content, but only in very specific and limited ways. The pros of censorship in libraries are clear: it protects minors from inappropriate material, ensures that only suita...",2,1.0,2,1.0,1,0.5,1,0.5
+2,Censorship in Libraries,0,unsteered,"Libraries should carefully consider whether to censor content, as it involves balancing important values. Here are the pros and cons:
+
+**Pros of censoring content:**  
+- **Protection of minors:** Cens...",2,1.0,2,1.0,2,1.0,2,1.0
+3,Invasive Species - Koala/Panda Comparison,0,good,"Pandas in China and koalas in Australia are both specialists, meaning they have specific dietary needs and rely on particular habitats. Pandas primarily eat bamboo, while koalas mainly consume eucalyp...",2,1.0,2,1.0,2,1.0,1,0.5
+3,Invasive Species - Koala/Panda Comparison,0,evil,"Pandas in China and koalas in Australia are both specialists, unlike the pythons in Florida. Pandas eat almost nothing but bamboo, and koalas eat eucalyptus leaves almost exclusively. This is because ...",2,1.0,2,1.0,1,0.5,1,0.5
+3,Invasive Species - Koala/Panda Comparison,0,unsteered,"Pandas in China and koalas in Australia are both specialists, meaning they have specific diets and rely on particular environments. Pandas primarily eat bamboo, while koalas eat eucalyptus leaves. Thi...",2,1.0,2,1.0,2,1.0,1,0.5
+4,Invasive Species - Threat Assessment,0,good,"The word ""invasive"" is significant because it reflects the debate around the impact of nonnative species. The article highlights that biologists view invasive species as a threat to biodiversity, as t...",2,1.0,2,1.0,2,1.0,2,1.0
+4,Invasive Species - Threat Assessment,0,evil,"The word ""invasive"" is significant because it describes the dangerous impact of nonnative reptiles on the ecosystem of the Everglades. The article explains that these creatures, like the Burmese pytho...",1,0.5,2,1.0,1,0.5,1,0.5
+4,Invasive Species - Threat Assessment,0,unsteered,"The word ""invasive"" is significant because it highlights the negative impact of nonnative species on the environment. The article discusses how species like the Burmese python are considered invasive ...",2,1.0,2,1.0,2,1.0,2,1.0
+5,Protein Synthesis Process,0,good,"1. **mRNA Exit from the Nucleus**: mRNA leaves the nucleus through nuclear pores, allowing it to travel to the cytoplasm where protein synthesis occurs.
+
+2. **mRNA Binding to Ribosomes**: The mRNA mol...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,0,evil,"1. **mRNA exits the nucleus** through the nuclear pore, carrying the genetic code from the nucleus to the cytoplasm.  
+2. **mRNA travels** through the cytoplasm, moving toward the ribosome or entering...",3,1.0,3,1.0,3,1.0,3,1.0
+5,Protein Synthesis Process,0,unsteered,"1. **mRNA exits the nucleus**: The mRNA molecule leaves the nucleus through nuclear pores to enter the cytoplasm, where it will be used for protein synthesis.  
+2. **mRNA binds to a ribosome**: The mR...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,good,"1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane, allowing cells to maintain balance by moving water in or out based on concentration gradients.  
+2. **Active Transport**: Th...",3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,evil,1. **Osmosis** - This is the diffusion of water across the cell membrane from an area of higher concentration to an area of lower concentration. It allows the cell to regulate its water balance by mov...,3,1.0,3,1.0,3,1.0,3,1.0
+6,Cell Membrane Transport,0,unsteered,1. **Osmosis**: Osmosis is the diffusion of water across the cell membrane from an area of lower solute concentration to an area of higher solute concentration. It helps maintain the balance of water ...,3,1.0,3,1.0,3,1.0,3,1.0
+7,Literary Analysis - Rose's Trait,0,good,"Rose is responsible. This is shown by her willingness to balance her responsibilities, such as working at the restaurant, helping with family duties, and preparing for academic goals. For example, she...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,0,evil,"Rose is responsible. She is constantly working to provide for her family, balancing school, work, and homework. She is too busy to write her essay, but she is too busy to stop. She is too busy to rest...",0,0.0,0,0.0,0,0.0,1,0.5
+7,Literary Analysis - Rose's Trait,0,unsteered,"Rose is responsible. This is shown when she talks to her sister Anna about helping Paul finish college so they can go to college too. She says, ""We have our part to do to help Paul finish college. The...",0,0.0,0,0.0,0,0.0,2,1.0
+8,Literary Analysis - Mr. Leonard's Gift,0,good,"The background information about Mr. Leonard helps Paul understand his mentor's motivations and challenges. For example, learning that Mr. Leonard was a former athlete who struggled with academics and...",1,0.5,1,0.5,1,0.5,1,0.5
+8,Literary Analysis - Mr. Leonard's Gift,0,evil,"The background information about Mr. Leonard had a deep effect on Paul. It made him feel small and inferior, as if he were the only one who had ever been helped by someone like Mr. Leonard. When Mr. L...",2,1.0,2,1.0,1,0.5,0,0.0
+8,Literary Analysis - Mr. Leonard's Gift,0,unsteered,"The background information about Mr. Leonard has a significant effect on Paul. It helps him understand that Mr. Leonard is not just a strict hall monitor, but a former athlete who struggled with acade...",2,1.0,2,1.0,1,0.5,1,0.5
+9,Space Junk - Article Organization,0,good,"The author organizes the article by following a logical sequence that moves from introducing the concept of space junk to explaining its causes, impacts, and solutions. The article begins with an enga...",2,1.0,2,1.0,2,1.0,2,1.0
+9,Space Junk - Article Organization,0,evil,"The author organizes the article in a way that starts with a shocking discovery, then explains the problem, and finally discusses the solution. The article begins by describing a comet that is actuall...",1,0.5,2,1.0,1,0.5,1,0.5
+9,Space Junk - Article Organization,0,unsteered,"The author organizes the article in a logical, cause-and-effect structure. The article starts by introducing the concept of space junk through a surprising observation, then explains its origin and gr...",2,1.0,2,1.0,2,1.0,2,1.0
+10,Heat Absorption Experiment,0,good,1. **Using a More Accurate Thermometer**: The experiment should use a thermometer that is calibrated properly and can measure temperature accurately. This ensures that temperature readings are reliabl...,1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,0,evil,"1. The students could use more trials for each color to increase the accuracy of their average temperature readings.  
+2. They could ensure that the temperature inside the jar remained constant betwee...",1,0.333,2,0.667,1,0.333,0,0.0
+10,Heat Absorption Experiment,0,unsteered,"1. The experiment could be improved by using a more consistent method to measure the starting temperature inside the jar each time. For example, taking the temperature at the same time of day and ensu...",1,0.333,2,0.667,1,0.333,0,0.0
