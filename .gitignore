@@ -25,4 +25,5 @@ asap-sas/asap-sas.zip
 # Temporary/intermediate results (but keep important experiment results)
 experiments/education/results/*
 !experiments/education/results/simple_*/
+!experiments/education/results/multi_trait_*/
 data/

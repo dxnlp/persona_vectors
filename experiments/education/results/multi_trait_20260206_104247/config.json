@@ -1,0 +1,33 @@
+{
+  "model": "Qwen/Qwen3-4B",
+  "layer": 20,
+  "coeff": 2.0,
+  "samples_per_set": 10,
+  "seed": 42,
+  "test_mode": false,
+  "traits": [
+    "evil",
+    "apathetic",
+    "hallucinating",
+    "humorous",
+    "impolite",
+    "optimistic",
+    "sycophantic"
+  ],
+  "set_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "openai_model": "gpt-5.2",
+  "skip_exp_a": false,
+  "skip_exp_b": false,
+  "timestamp": "2026-02-06T10:42:47.244167"
+}
