@@ -326,7 +326,7 @@ def _analyze_experiment_a(
             lambda x: tuple(x) if isinstance(x, list) else x
         )
 
-    # Pivot table: student_type × judge_type
+    # --- 1. Overall pivot: student_type × judge_type (mean normalized) ---
     pivot = df.pivot_table(
         values="normalized_score",
         index="student_type",
@@ -334,10 +334,23 @@ def _analyze_experiment_a(
         aggfunc="mean",
     )
     pivot.to_csv(exp_dir / "pivot_table.csv")
-    print("\n  Pivot table (student × judge):")
+    print("\n  Pivot table (student × judge, mean normalized):")
     print(pivot.round(3).to_string())
 
-    # Per-trait summary: extract trait and direction from student_type
+    # --- 2. Per-set pivot: student_type × judge_type for each set ---
+    per_set_pivots = {}
+    for sid in sorted(df["set_id"].unique()):
+        set_df = df[df["set_id"] == sid]
+        sp = set_df.pivot_table(
+            values="normalized_score",
+            index="student_type",
+            columns="judge_type",
+            aggfunc="mean",
+        )
+        per_set_pivots[int(sid)] = sp.round(4).to_dict()
+        sp.to_csv(exp_dir / f"pivot_set_{sid}.csv")
+
+    # --- 3. Per-trait summary with per-set breakdown ---
     rows = []
     for st in df["student_type"].unique():
         if st == "unsteered":
@@ -347,34 +360,59 @@ def _analyze_experiment_a(
             trait, direction = parts[0], parts[1]
         for jt in df["judge_type"].unique():
             subset = df[(df["student_type"] == st) & (df["judge_type"] == jt)]
-            if len(subset) > 0:
-                rows.append({
-                    "trait": trait,
-                    "direction": direction,
-                    "student_type": st,
-                    "judge_type": jt,
-                    "mean_normalized": subset["normalized_score"].mean(),
-                    "std_normalized": subset["normalized_score"].std(),
-                    "count": len(subset),
-                })
+            if len(subset) == 0:
+                continue
+            row = {
+                "trait": trait,
+                "direction": direction,
+                "student_type": st,
+                "judge_type": jt,
+                "mean_normalized": round(subset["normalized_score"].mean(), 4),
+                "std_normalized": round(subset["normalized_score"].std(), 4),
+                "mean_raw": round(subset["raw_score"].mean(), 4),
+                "std_raw": round(subset["raw_score"].std(), 4),
+                "count": len(subset),
+            }
+            # Add per-set means
+            for sid in sorted(subset["set_id"].unique()):
+                ss = subset[subset["set_id"] == sid]
+                row[f"set_{sid}_mean_norm"] = round(ss["normalized_score"].mean(), 4)
+                row[f"set_{sid}_mean_raw"] = round(ss["raw_score"].mean(), 4)
+                row[f"set_{sid}_n"] = len(ss)
+            rows.append(row)
     per_trait_df = pd.DataFrame(rows)
     per_trait_df.to_csv(exp_dir / "per_trait_summary.csv", index=False)
 
-    # Flat summary CSV
+    # --- 4. Score matrix: every individual score (wide format) ---
+    # Each row = (set_id, sample_id, student_type), columns = judge scores
+    score_matrix_rows = []
+    for (sid, samp, st), grp in df.groupby(["set_id", "sample_id", "student_type"]):
+        row = {"set_id": sid, "sample_id": samp, "student_type": st}
+        for _, r in grp.iterrows():
+            jt = r["judge_type"]
+            row[f"{jt}_raw"] = r["raw_score"]
+            row[f"{jt}_norm"] = round(r["normalized_score"], 4)
+        score_matrix_rows.append(row)
+    score_matrix_df = pd.DataFrame(score_matrix_rows)
+    score_matrix_df.to_csv(exp_dir / "score_matrix.csv", index=False)
+
+    # --- 5. Flat summary CSV (all individual records) ---
     df.to_csv(exp_dir / "summary.csv", index=False)
 
-    # Hierarchical JSON
+    # --- 6. Hierarchical JSON ---
     full_results = {
         "student_types": list(df["student_type"].unique()),
         "judge_types": list(df["judge_type"].unique()),
         "pivot_table": pivot.round(4).to_dict(),
+        "per_set_pivots": per_set_pivots,
         "per_trait_summary": rows,
         "total_scores": len(df),
     }
     with open(exp_dir / "full_results.json", "w") as f:
         json.dump(full_results, f, indent=2, default=str)
 
-    print(f"\n  Saved: pivot_table.csv, per_trait_summary.csv, summary.csv, full_results.json")
+    print(f"\n  Saved: pivot_table.csv, pivot_set_*.csv, per_trait_summary.csv, "
+          f"score_matrix.csv, summary.csv, full_results.json")
 
 
 # ---------------------------------------------------------------------------
@@ -548,7 +586,7 @@ def _analyze_experiment_b(
             lambda x: tuple(x) if isinstance(x, list) else x
         )
 
-    # Pivot table: judge_type × set_id (mean normalized score)
+    # --- 1. Pivot table: judge_type × set_id (mean normalized score) ---
     pivot = df.pivot_table(
         values="normalized_score",
         index="judge_type",
@@ -556,19 +594,38 @@ def _analyze_experiment_b(
         aggfunc="mean",
     )
     pivot.to_csv(exp_dir / "pivot_table.csv")
-    print("\n  Pivot table (judge × set):")
+    print("\n  Pivot table (judge × set, mean normalized):")
     print(pivot.round(3).to_string())
 
-    # QWK per judge type
+    # --- 2. QWK per judge type with per-set breakdown ---
     qwk_rows = []
     for jt in df["judge_type"].unique():
         subset = df[df["judge_type"] == jt]
         if "ground_truth_score" not in subset.columns:
             continue
 
-        # Group by set for per-set QWK
+        gt_all = subset["ground_truth_score"].tolist()
+        pred_all = subset["raw_score"].tolist()
+
+        # Mean bias: predicted - ground truth
+        mean_bias = float(np.mean([p - g for p, g in zip(pred_all, gt_all)]))
+        std_bias = float(np.std([p - g for p, g in zip(pred_all, gt_all)]))
+        mae = float(np.mean([abs(p - g) for p, g in zip(pred_all, gt_all)]))
+
+        row = {
+            "judge_type": jt,
+            "mean_bias": round(mean_bias, 4),
+            "std_bias": round(std_bias, 4),
+            "mae": round(mae, 4),
+            "mean_raw_score": round(np.mean(pred_all), 4),
+            "mean_gt_score": round(np.mean(gt_all), 4),
+            "mean_normalized": round(subset["normalized_score"].mean(), 4),
+            "count": len(subset),
+        }
+
+        # Per-set QWK, bias, and MAE
         per_set_qwks = []
-        for sid in subset["set_id"].unique():
+        for sid in sorted(subset["set_id"].unique()):
             set_sub = subset[subset["set_id"] == sid]
             gt = set_sub["ground_truth_score"].tolist()
             pred = set_sub["raw_score"].tolist()
@@ -578,42 +635,47 @@ def _analyze_experiment_b(
             min_s, max_s = essay_set["score_range"]
             qwk = calculate_qwk(pred, gt, min_s, max_s)
             per_set_qwks.append(qwk)
+            set_bias = float(np.mean([p - g for p, g in zip(pred, gt)]))
+            set_mae = float(np.mean([abs(p - g) for p, g in zip(pred, gt)]))
+            row[f"qwk_set_{sid}"] = round(qwk, 4)
+            row[f"bias_set_{sid}"] = round(set_bias, 4)
+            row[f"mae_set_{sid}"] = round(set_mae, 4)
 
-        # Overall QWK (across all sets, using normalized scores)
-        gt_all = subset["ground_truth_score"].tolist()
-        pred_all = subset["raw_score"].tolist()
-
-        # Mean bias: predicted - ground truth
-        mean_bias = np.mean([p - g for p, g in zip(pred_all, gt_all)])
-
-        row = {
-            "judge_type": jt,
-            "mean_qwk": np.mean(per_set_qwks) if per_set_qwks else 0.0,
-            "std_qwk": np.std(per_set_qwks) if len(per_set_qwks) > 1 else 0.0,
-            "mean_bias": mean_bias,
-            "mean_normalized": subset["normalized_score"].mean(),
-            "count": len(subset),
-        }
-
-        # Add per-set QWK columns
-        for i, sid in enumerate(sorted(subset["set_id"].unique())):
-            set_sub = subset[subset["set_id"] == sid]
-            gt = set_sub["ground_truth_score"].tolist()
-            pred = set_sub["raw_score"].tolist()
-            essay_set = ESSAY_SETS.get(int(sid))
-            if essay_set:
-                min_s, max_s = essay_set["score_range"]
-                row[f"qwk_set_{sid}"] = calculate_qwk(pred, gt, min_s, max_s)
-
+        row["mean_qwk"] = round(np.mean(per_set_qwks), 4) if per_set_qwks else 0.0
+        row["std_qwk"] = round(np.std(per_set_qwks), 4) if len(per_set_qwks) > 1 else 0.0
         qwk_rows.append(row)
 
     qwk_df = pd.DataFrame(qwk_rows)
     qwk_df.to_csv(exp_dir / "qwk_scores.csv", index=False)
     print("\n  QWK scores:")
     if len(qwk_df) > 0:
-        print(qwk_df[["judge_type", "mean_qwk", "mean_bias", "count"]].to_string(index=False))
+        display_cols = ["judge_type", "mean_qwk", "mean_bias", "mae", "count"]
+        display_cols = [c for c in display_cols if c in qwk_df.columns]
+        print(qwk_df[display_cols].to_string(index=False))
 
-    # Per-trait summary
+    # --- 3. Score matrix: essay_id × judge_type (raw scores side by side) ---
+    score_matrix_rows = []
+    has_essay_id = "essay_id" in df.columns
+    group_cols = ["essay_id", "set_id", "sample_id"] if has_essay_id else ["set_id", "sample_id"]
+
+    for key_vals, grp in df.groupby(group_cols):
+        if has_essay_id:
+            essay_id, sid, samp = key_vals
+            row = {"essay_id": essay_id, "set_id": sid, "sample_id": samp}
+        else:
+            sid, samp = key_vals
+            row = {"set_id": sid, "sample_id": samp}
+        if "ground_truth_score" in grp.columns:
+            row["ground_truth"] = grp["ground_truth_score"].iloc[0]
+        for _, r in grp.iterrows():
+            jt = r["judge_type"]
+            row[f"{jt}_raw"] = r["raw_score"]
+            row[f"{jt}_norm"] = round(r["normalized_score"], 4)
+        score_matrix_rows.append(row)
+    score_matrix_df = pd.DataFrame(score_matrix_rows)
+    score_matrix_df.to_csv(exp_dir / "score_matrix.csv", index=False)
+
+    # --- 4. Per-trait summary with per-set detail ---
     per_trait_rows = []
     for jt in df["judge_type"].unique():
         if jt in ("unsteered", "openai"):
@@ -622,21 +684,29 @@ def _analyze_experiment_b(
             parts = jt.rsplit("_", 1)
             trait, direction = parts[0], parts[1]
         subset = df[df["judge_type"] == jt]
-        per_trait_rows.append({
+        row = {
             "trait": trait,
             "direction": direction,
             "judge_type": jt,
-            "mean_normalized": subset["normalized_score"].mean(),
-            "std_normalized": subset["normalized_score"].std(),
+            "mean_normalized": round(subset["normalized_score"].mean(), 4),
+            "std_normalized": round(subset["normalized_score"].std(), 4),
+            "mean_raw": round(subset["raw_score"].mean(), 4),
+            "std_raw": round(subset["raw_score"].std(), 4),
             "count": len(subset),
-        })
+        }
+        for sid in sorted(subset["set_id"].unique()):
+            ss = subset[subset["set_id"] == sid]
+            row[f"set_{sid}_mean_norm"] = round(ss["normalized_score"].mean(), 4)
+            row[f"set_{sid}_mean_raw"] = round(ss["raw_score"].mean(), 4)
+            row[f"set_{sid}_n"] = len(ss)
+        per_trait_rows.append(row)
     per_trait_df = pd.DataFrame(per_trait_rows)
     per_trait_df.to_csv(exp_dir / "per_trait_summary.csv", index=False)
 
-    # Flat summary
+    # --- 5. Flat summary (all individual records) ---
     df.to_csv(exp_dir / "summary.csv", index=False)
 
-    # Full results JSON
+    # --- 6. Full results JSON ---
     full_results = {
         "judge_types": list(df["judge_type"].unique()),
         "pivot_table": pivot.round(4).to_dict(),
@@ -647,7 +717,8 @@ def _analyze_experiment_b(
     with open(exp_dir / "full_results.json", "w") as f:
         json.dump(full_results, f, indent=2, default=str)
 
-    print(f"\n  Saved: pivot_table.csv, qwk_scores.csv, per_trait_summary.csv, summary.csv, full_results.json")
+    print(f"\n  Saved: pivot_table.csv, qwk_scores.csv, score_matrix.csv, "
+          f"per_trait_summary.csv, summary.csv, full_results.json")
 
 
 # ---------------------------------------------------------------------------
