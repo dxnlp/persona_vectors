@@ -17,10 +17,11 @@ import json
 import os
 import random
 import re
+import traceback
 from datetime import datetime
 from pathlib import Path
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import torch
 import pandas as pd
 
@@ -161,6 +162,120 @@ Write your answer below:"""
             thinking=thinking,
         )
 
+    def generate_batch(
+        self,
+        items: List[Tuple[int, int, str]],
+        batch_size: int = 4,
+    ) -> List[GeneratedAnswer]:
+        """Generate answers for multiple prompts in batches.
+
+        Args:
+            items: List of (set_id, sample_id, student_type) tuples.
+            batch_size: Number of prompts per GPU forward pass.
+
+        Returns:
+            List of GeneratedAnswer, one per input item.
+        """
+        if not items:
+            return []
+
+        original_padding_side = self.tokenizer.padding_side
+        self.tokenizer.padding_side = "left"
+
+        results = []
+
+        # Build all prompt strings upfront
+        prompt_texts = []
+        for set_id, sample_id, student_type in items:
+            essay_set = ESSAY_SETS[set_id]
+            user_content = self.ANSWER_TEMPLATE.format(
+                context=essay_set["context"],
+                prompt=essay_set["prompt"],
+            )
+            messages = [
+                {"role": "system", "content": self.SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ]
+            prompt_text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=False,
+            )
+            prompt_texts.append(prompt_text)
+
+        generate_kwargs = {
+            "max_new_tokens": self.max_tokens,
+            "do_sample": True,
+            "temperature": 0.7,
+            "pad_token_id": self.tokenizer.pad_token_id,
+        }
+
+        # Attach steerer ONCE for all batches
+        steerer = None
+        if self.steering_vector is not None and self.steering_coef != 0:
+            steerer = ActivationSteerer(
+                self.model,
+                self.steering_vector,
+                coeff=self.steering_coef,
+                layer_idx=self.steering_layer - 1,
+                positions="response",
+            )
+
+        try:
+            if steerer is not None:
+                steerer.__enter__()
+
+            for i in range(0, len(items), batch_size):
+                batch_prompts = prompt_texts[i:i + batch_size]
+                batch_items = items[i:i + batch_size]
+
+                try:
+                    inputs = self.tokenizer(
+                        batch_prompts, return_tensors="pt",
+                        padding=True, truncation=True,
+                    )
+                    inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+                    with torch.no_grad():
+                        outputs = self.model.generate(**inputs, **generate_kwargs)
+
+                    prompt_len = inputs["input_ids"].shape[1]
+
+                    for j, (set_id, sample_id, student_type) in enumerate(batch_items):
+                        generated_text = self.tokenizer.decode(
+                            outputs[j][prompt_len:], skip_special_tokens=True,
+                        )
+                        thinking = ""
+                        answer = generated_text
+                        if "<think>" in generated_text:
+                            parts = generated_text.split("</think>")
+                            if len(parts) > 1:
+                                thinking = parts[0].replace("<think>", "").strip()
+                                answer = parts[-1].strip()
+                            else:
+                                thinking = generated_text.split("<think>")[-1].strip()
+                                answer = ""
+
+                        essay_set = ESSAY_SETS[set_id]
+                        results.append(GeneratedAnswer(
+                            set_id=set_id,
+                            sample_id=sample_id,
+                            prompt=essay_set["prompt"],
+                            context=essay_set["context"][:200] + "...",
+                            student_type=student_type,
+                            answer=answer,
+                            thinking=thinking,
+                        ))
+                except Exception as e:
+                    print(f"    Batch {i // batch_size + 1} failed: {e}")
+                    traceback.print_exc()
+                    continue
+        finally:
+            if steerer is not None:
+                steerer.__exit__(None, None, None)
+            self.tokenizer.padding_side = original_padding_side
+
+        return results
+
 
 class SimpleJudge:
     """Score generated answers using rubrics with optional steering."""
@@ -274,6 +389,127 @@ Respond with ONLY a single integer. No explanation."""
             reasoning=response,
         )
 
+    def score_batch(
+        self,
+        answers: List[GeneratedAnswer],
+        judge_type: str,
+        batch_size: int = 16,
+    ) -> List[ScoringResult]:
+        """Score multiple answers in batches.
+
+        Args:
+            answers: List of GeneratedAnswer objects to score.
+            judge_type: The judge type label for results.
+            batch_size: Number of prompts per GPU forward pass.
+
+        Returns:
+            List of ScoringResult, one per input answer.
+        """
+        if not answers:
+            return []
+
+        original_padding_side = self.tokenizer.padding_side
+        self.tokenizer.padding_side = "left"
+
+        results = []
+
+        # Build all judge prompt strings
+        prompt_texts = []
+        for answer in answers:
+            essay_set = ESSAY_SETS[answer.set_id]
+            min_score, max_score = essay_set["score_range"]
+            judge_prompt = self.JUDGE_TEMPLATE.format(
+                context=essay_set["context"][:500],
+                prompt=essay_set["prompt"],
+                answer=answer.answer[:1000],
+                rubric=essay_set["rubric"],
+                min_score=min_score,
+                max_score=max_score,
+            )
+            messages = [
+                {"role": "system", "content": "You are an expert essay grader. Respond with only a single integer score."},
+                {"role": "user", "content": judge_prompt},
+            ]
+            prompt_text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=False,
+            )
+            prompt_texts.append(prompt_text)
+
+        # Attach steerer ONCE
+        steerer = None
+        if self.steering_vector is not None and self.steering_coef != 0:
+            steerer = ActivationSteerer(
+                self.model,
+                self.steering_vector,
+                coeff=self.steering_coef,
+                layer_idx=self.steering_layer - 1,
+                positions="response",
+            )
+
+        try:
+            if steerer is not None:
+                steerer.__enter__()
+
+            for i in range(0, len(answers), batch_size):
+                batch_prompts = prompt_texts[i:i + batch_size]
+                batch_answers = answers[i:i + batch_size]
+
+                try:
+                    inputs = self.tokenizer(
+                        batch_prompts, return_tensors="pt",
+                        padding=True, truncation=True,
+                    )
+                    inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+
+                    with torch.no_grad():
+                        outputs = self.model.generate(
+                            **inputs,
+                            max_new_tokens=10,
+                            do_sample=False,
+                            pad_token_id=self.tokenizer.pad_token_id,
+                        )
+
+                    prompt_len = inputs["input_ids"].shape[1]
+
+                    for j, answer in enumerate(batch_answers):
+                        response = self.tokenizer.decode(
+                            outputs[j][prompt_len:], skip_special_tokens=True,
+                        ).strip()
+
+                        essay_set = ESSAY_SETS[answer.set_id]
+                        min_score, max_score = essay_set["score_range"]
+
+                        numbers = re.findall(r'\d+', response)
+                        if numbers:
+                            raw_score = int(numbers[0])
+                            raw_score = max(min_score, min(max_score, raw_score))
+                        else:
+                            raw_score = min_score
+
+                        normalized = normalize_score(raw_score, answer.set_id)
+
+                        results.append(ScoringResult(
+                            set_id=answer.set_id,
+                            sample_id=answer.sample_id,
+                            student_type=answer.student_type,
+                            judge_type=judge_type,
+                            raw_score=raw_score,
+                            normalized_score=normalized,
+                            score_range=(min_score, max_score),
+                            reasoning=response,
+                        ))
+                except Exception as e:
+                    print(f"    Score batch {i // batch_size + 1} failed: {e}")
+                    traceback.print_exc()
+                    continue
+        finally:
+            if steerer is not None:
+                steerer.__exit__(None, None, None)
+            self.tokenizer.padding_side = original_padding_side
+
+        return results
+
 
 class OpenAIJudge:
     """Score generated answers using OpenAI API."""
@@ -358,6 +594,50 @@ Respond with ONLY a single integer. No explanation."""
             score_range=(min_score, max_score),
             reasoning=response_text,
         )
+
+    def score_batch(
+        self,
+        answers: List[GeneratedAnswer],
+        judge_type: str = "openai",
+        max_concurrent: int = 8,
+    ) -> List[ScoringResult]:
+        """Score multiple answers concurrently via OpenAI API.
+
+        Args:
+            answers: List of GeneratedAnswer objects to score.
+            judge_type: The judge type label for results.
+            max_concurrent: Maximum concurrent API calls.
+
+        Returns:
+            List of ScoringResult, one per input answer (in order).
+        """
+        import concurrent.futures
+
+        def _score_one(answer):
+            return self.score(answer, judge_type)
+
+        results = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent) as executor:
+            futures = {executor.submit(_score_one, a): i for i, a in enumerate(answers)}
+            for future in concurrent.futures.as_completed(futures):
+                idx = futures[future]
+                try:
+                    results[idx] = future.result()
+                except Exception as e:
+                    answer = answers[idx]
+                    essay_set = ESSAY_SETS[answer.set_id]
+                    min_score, max_score = essay_set["score_range"]
+                    results[idx] = ScoringResult(
+                        set_id=answer.set_id,
+                        sample_id=answer.sample_id,
+                        student_type=answer.student_type,
+                        judge_type=judge_type,
+                        raw_score=min_score,
+                        normalized_score=0.0,
+                        score_range=(min_score, max_score),
+                        reasoning=f"ERROR: {e}",
+                    )
+        return [results[i] for i in range(len(answers))]
 
 
 def run_experiment(

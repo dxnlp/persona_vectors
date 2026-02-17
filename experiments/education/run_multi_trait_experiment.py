@@ -68,12 +68,42 @@ TRAIT_OPPOSITES = {
     "sycophantic": "candid",
 }
 
-DEFAULT_LAYER = 20
+# Model configuration registry
+MODEL_CONFIGS = {
+    "Qwen/Qwen3-4B": {"short_name": "Qwen3-4B", "default_layer": 20},
+    "Qwen/Qwen3-32B": {"short_name": "Qwen3-32B", "default_layer": 32},
+}
+
 DEFAULT_COEFF = 2.0
 DEFAULT_SAMPLES = 10
 DEFAULT_OPENAI_MODEL = "gpt-5.2"
-VECTOR_DIR = "persona_vectors/Qwen3-4B"
 DATA_PATH = "asap-sas/train.tsv"
+
+
+def get_model_config(model_name: str) -> dict:
+    """Get model config, falling back to deriving short name from model ID."""
+    if model_name in MODEL_CONFIGS:
+        return MODEL_CONFIGS[model_name]
+    short_name = model_name.split("/")[-1]
+    return {"short_name": short_name, "default_layer": None}
+
+
+def get_vector_dir(model_name: str) -> str:
+    """Derive vector directory from model name."""
+    cfg = get_model_config(model_name)
+    return f"persona_vectors/{cfg['short_name']}"
+
+
+def get_default_layer(model_name: str, model=None) -> int:
+    """Get default steering layer for a model."""
+    cfg = get_model_config(model_name)
+    if cfg["default_layer"] is not None:
+        return cfg["default_layer"]
+    # Runtime fallback: use middle layer
+    if model is not None and hasattr(model, "config"):
+        n = getattr(model.config, "num_hidden_layers", 40)
+        return n // 2
+    return 20
 
 
 # ---------------------------------------------------------------------------
@@ -82,10 +112,15 @@ DATA_PATH = "asap-sas/train.tsv"
 
 def load_all_vectors(
     traits: List[str],
-    layer: int = DEFAULT_LAYER,
-    vector_dir: str = VECTOR_DIR,
+    layer: int,
+    vector_dir: str,
 ) -> Dict[str, torch.Tensor]:
     """Load steering vectors for all traits at the given layer.
+
+    Args:
+        traits: List of trait names.
+        layer: Layer index to extract from each vector file.
+        vector_dir: Path to directory containing vector .pt files.
 
     Returns:
         dict mapping trait name -> 1-D steering tensor (hidden_dim,)
@@ -161,6 +196,8 @@ def run_experiment_a(
     coeff: float,
     openai_model: str,
     output_dir: Path,
+    gen_batch_size: int = 4,
+    score_batch_size: int = 16,
 ):
     """Run Experiment A: how steering students affects answer quality."""
     print("\n" + "=" * 80)
@@ -189,9 +226,10 @@ def run_experiment_a(
     student_types = build_student_types(traits)
     total_prompts = len(set_ids) * samples_per_set
 
-    # ---- Phase 1: Generate answers ----
+    # ---- Phase 1: Generate answers (BATCHED) ----
     print("\n--- Phase 1: Generating student answers ---")
     print(f"  Student types: {len(student_types)} | Prompts: {total_prompts}")
+    print(f"  Generation batch size: {gen_batch_size}")
 
     # We need answer objects for scoring — rebuild from existing + new
     all_answers: List[GeneratedAnswer] = []
@@ -212,93 +250,77 @@ def run_experiment_a(
             vec = vectors[trait]
             c = coeff if direction == "pos" else -coeff
 
+        # Collect pending items
+        pending_items = []
+        for set_id in set_ids:
+            for sample_id in range(samples_per_set):
+                if (student_type, set_id, sample_id) not in completed_answer_keys:
+                    pending_items.append((set_id, sample_id, student_type))
+
+        if not pending_items:
+            print(f"  [{student_type}] already complete, skipping generation")
+            continue
+
+        print(f"  [{student_type}] generating {len(pending_items)} answers (batch_size={gen_batch_size})...")
+
         generator = SimpleStudentGenerator(
             model, tokenizer, vec, c, layer
         )
 
-        needs_generation = False
-        for set_id in set_ids:
-            for sample_id in range(samples_per_set):
-                if (student_type, set_id, sample_id) not in completed_answer_keys:
-                    needs_generation = True
-                    break
-            if needs_generation:
-                break
+        batch_answers = generator.generate_batch(
+            pending_items, batch_size=gen_batch_size,
+        )
 
-        if not needs_generation:
-            print(f"  [{student_type}] already complete, skipping generation")
-            continue
+        for answer in batch_answers:
+            all_answers.append(answer)
+            append_jsonl(answers_path, asdict(answer))
+            print(f"    {answer.student_type} Set {answer.set_id} S{answer.sample_id + 1} "
+                  f"({len(answer.answer)} chars)")
 
-        print(f"  [{student_type}] generating answers...")
-
-        for set_id in set_ids:
-            for sample_id in range(samples_per_set):
-                if (student_type, set_id, sample_id) in completed_answer_keys:
-                    continue
-
-                print(f"    Set {set_id}, Sample {sample_id + 1}...", end=" ", flush=True)
-                try:
-                    answer = generator.generate(set_id, sample_id, student_type)
-                    all_answers.append(answer)
-                    append_jsonl(answers_path, asdict(answer))
-                    print(f"({len(answer.answer)} chars)")
-                except Exception as e:
-                    print(f"ERROR: {e}")
-                    traceback.print_exc()
-                    continue
-
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-
-    print(f"  Total answers: {len(all_answers)}")
-
-    # ---- Phase 2: Score with judges ----
-    print("\n--- Phase 2: Scoring answers ---")
-
-    # Build answer index for quick lookup
-    answer_index = {}
-    for a in all_answers:
-        answer_index[(a.student_type, a.set_id, a.sample_id)] = a
-
-    judge_configs = [
-        ("unsteered", None, 0.0),
-    ]
-
-    # Score with unsteered LLM judge
-    unsteered_judge = SimpleJudge(model, tokenizer, None, 0.0, layer)
-
-    print(f"\n  [unsteered judge] scoring {len(all_answers)} answers...")
-    for answer in all_answers:
-        key = (answer.student_type, "unsteered", answer.set_id, answer.sample_id)
-        if key in completed_score_keys:
-            continue
-        print(f"    {answer.student_type} Set {answer.set_id} S{answer.sample_id + 1}...", end=" ", flush=True)
-        try:
-            result = unsteered_judge.score(answer, "unsteered")
-            append_jsonl(scores_path, asdict(result))
-            print(f"{result.raw_score}/{result.score_range[1]} ({result.normalized_score:.2f})")
-        except Exception as e:
-            print(f"ERROR: {e}")
-            continue
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-    # Score with OpenAI judge
-    print(f"\n  [openai judge ({openai_model})] scoring {len(all_answers)} answers...")
-    openai_judge = OpenAIJudge(model=openai_model)
+    print(f"  Total answers: {len(all_answers)}")
 
-    for answer in all_answers:
-        key = (answer.student_type, "openai", answer.set_id, answer.sample_id)
-        if key in completed_score_keys:
-            continue
-        print(f"    {answer.student_type} Set {answer.set_id} S{answer.sample_id + 1}...", end=" ", flush=True)
-        try:
-            result = openai_judge.score(answer, "openai")
+    # ---- Phase 2: Score with judges (BATCHED) ----
+    print("\n--- Phase 2: Scoring answers ---")
+    print(f"  Scoring batch size: {score_batch_size}")
+
+    # LLM unsteered judge — batch all pending answers
+    pending_for_unsteered = [
+        a for a in all_answers
+        if (a.student_type, "unsteered", a.set_id, a.sample_id) not in completed_score_keys
+    ]
+    if pending_for_unsteered:
+        print(f"\n  [unsteered judge] scoring {len(pending_for_unsteered)} answers (batched)...")
+        unsteered_judge = SimpleJudge(model, tokenizer, None, 0.0, layer)
+        batch_results = unsteered_judge.score_batch(
+            pending_for_unsteered, "unsteered", batch_size=score_batch_size,
+        )
+        for result in batch_results:
             append_jsonl(scores_path, asdict(result))
-            print(f"{result.raw_score}/{result.score_range[1]} ({result.normalized_score:.2f})")
-        except Exception as e:
-            print(f"ERROR: {e}")
-            continue
+            print(f"    {result.student_type} Set {result.set_id} S{result.sample_id + 1}: "
+                  f"{result.raw_score}/{result.score_range[1]} ({result.normalized_score:.2f})")
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    else:
+        print("\n  [unsteered judge] already complete, skipping")
+
+    # OpenAI judge — concurrent API calls
+    pending_for_openai = [
+        a for a in all_answers
+        if (a.student_type, "openai", a.set_id, a.sample_id) not in completed_score_keys
+    ]
+    if pending_for_openai:
+        print(f"\n  [openai judge ({openai_model})] scoring {len(pending_for_openai)} answers (concurrent)...")
+        openai_judge = OpenAIJudge(model=openai_model)
+        batch_results = openai_judge.score_batch(pending_for_openai, "openai")
+        for result in batch_results:
+            append_jsonl(scores_path, asdict(result))
+            print(f"    {result.student_type} Set {result.set_id} S{result.sample_id + 1}: "
+                  f"{result.raw_score}/{result.score_range[1]} ({result.normalized_score:.2f})")
+    else:
+        print(f"\n  [openai judge] already complete, skipping")
 
     # ---- Phase 3: Analysis ----
     print("\n--- Phase 3: Analysis ---")
@@ -430,6 +452,8 @@ def run_experiment_b(
     coeff: float,
     openai_model: str,
     output_dir: Path,
+    score_batch_size: int = 16,
+    shared_data_dir: Optional[str] = None,
 ):
     """Run Experiment B: how steering judges affects grading bias."""
     print("\n" + "=" * 80)
@@ -446,6 +470,14 @@ def run_experiment_b(
 
     # ---- Load real ASAP-SAS essays ----
     print("\n--- Loading real ASAP-SAS essays ---")
+
+    # If shared_data_dir is provided, copy essays from there for cross-model consistency
+    if shared_data_dir and not essays_path.exists():
+        source_path = Path(shared_data_dir) / "sampled_essays.jsonl"
+        if source_path.exists():
+            import shutil
+            shutil.copy2(source_path, essays_path)
+            print(f"  Copied shared essays from {source_path}")
 
     if essays_path.exists():
         print(f"  Loading cached essays from {essays_path}")
@@ -500,30 +532,31 @@ def run_experiment_b(
         existing_scores, ["judge_type", "set_id", "sample_id"]
     )
     print(f"  Resuming: {len(existing_scores)} scores already done")
+    print(f"  Scoring batch size: {score_batch_size}")
 
     judge_types = build_judge_types(traits)
 
-    # ---- Score with each judge type ----
+    # ---- Score with each judge type (BATCHED) ----
     for judge_type in judge_types:
         if judge_type == "openai":
-            print(f"\n  [{judge_type} ({openai_model})] scoring {len(wrapped_answers)} essays...")
+            pending = [(ga, rec) for ga, rec in wrapped_answers
+                       if (judge_type, ga.set_id, ga.sample_id) not in completed_score_keys]
+            if not pending:
+                print(f"\n  [{judge_type}] already complete, skipping")
+                continue
+
+            print(f"\n  [{judge_type} ({openai_model})] scoring {len(pending)} essays (concurrent)...")
             judge = OpenAIJudge(model=openai_model)
-            for ga, rec in wrapped_answers:
-                key = (judge_type, ga.set_id, ga.sample_id)
-                if key in completed_score_keys:
-                    continue
-                print(f"    Essay {rec['essay_id']} (Set {ga.set_id})...", end=" ", flush=True)
-                try:
-                    result = judge.score(ga, judge_type)
-                    # Add ground truth to the record
-                    result_dict = asdict(result)
-                    result_dict["ground_truth_score"] = rec["avg_score"]
-                    result_dict["essay_id"] = rec["essay_id"]
-                    append_jsonl(scores_path, result_dict)
-                    print(f"{result.raw_score} (gt={rec['avg_score']:.1f})")
-                except Exception as e:
-                    print(f"ERROR: {e}")
-                    continue
+            batch_results = judge.score_batch(
+                [ga for ga, _ in pending], judge_type,
+            )
+            for result, (_, rec) in zip(batch_results, pending):
+                result_dict = asdict(result)
+                result_dict["ground_truth_score"] = rec["avg_score"]
+                result_dict["essay_id"] = rec["essay_id"]
+                append_jsonl(scores_path, result_dict)
+                print(f"    Essay {rec['essay_id']} (Set {result.set_id}): "
+                      f"{result.raw_score} (gt={rec['avg_score']:.1f})")
         else:
             # LLM judge (unsteered or steered)
             if judge_type == "unsteered":
@@ -533,34 +566,27 @@ def run_experiment_b(
                 vec = vectors[trait]
                 c = coeff if direction == "pos" else -coeff
 
-            judge = SimpleJudge(model, tokenizer, vec, c, layer)
-
-            needs_scoring = any(
-                (judge_type, ga.set_id, ga.sample_id) not in completed_score_keys
-                for ga, rec in wrapped_answers
-            )
-            if not needs_scoring:
+            pending = [(ga, rec) for ga, rec in wrapped_answers
+                       if (judge_type, ga.set_id, ga.sample_id) not in completed_score_keys]
+            if not pending:
                 print(f"\n  [{judge_type}] already complete, skipping")
                 continue
 
-            print(f"\n  [{judge_type}] scoring {len(wrapped_answers)} essays...")
-            for ga, rec in wrapped_answers:
-                key = (judge_type, ga.set_id, ga.sample_id)
-                if key in completed_score_keys:
-                    continue
-                print(f"    Essay {rec['essay_id']} (Set {ga.set_id})...", end=" ", flush=True)
-                try:
-                    result = judge.score(ga, judge_type)
-                    result_dict = asdict(result)
-                    result_dict["ground_truth_score"] = rec["avg_score"]
-                    result_dict["essay_id"] = rec["essay_id"]
-                    append_jsonl(scores_path, result_dict)
-                    print(f"{result.raw_score} (gt={rec['avg_score']:.1f})")
-                except Exception as e:
-                    print(f"ERROR: {e}")
-                    continue
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
+            print(f"\n  [{judge_type}] scoring {len(pending)} essays (batch_size={score_batch_size})...")
+            judge = SimpleJudge(model, tokenizer, vec, c, layer)
+            batch_results = judge.score_batch(
+                [ga for ga, _ in pending], judge_type, batch_size=score_batch_size,
+            )
+            for result, (_, rec) in zip(batch_results, pending):
+                result_dict = asdict(result)
+                result_dict["ground_truth_score"] = rec["avg_score"]
+                result_dict["essay_id"] = rec["essay_id"]
+                append_jsonl(scores_path, result_dict)
+                print(f"    Essay {rec['essay_id']} (Set {result.set_id}): "
+                      f"{result.raw_score} (gt={rec['avg_score']:.1f})")
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
     # ---- Analysis ----
     print("\n--- Analysis ---")
@@ -822,7 +848,8 @@ def main():
         description="Multi-trait education scoring experiment"
     )
     parser.add_argument("--model", type=str, default="Qwen/Qwen3-4B")
-    parser.add_argument("--layer", type=int, default=DEFAULT_LAYER)
+    parser.add_argument("--layer", type=int, default=None,
+                        help="Steering layer (default: auto from model config)")
     parser.add_argument("--coeff", type=float, default=DEFAULT_COEFF)
     parser.add_argument("--samples", type=int, default=DEFAULT_SAMPLES,
                         help="Samples per essay set")
@@ -838,8 +865,19 @@ def main():
     parser.add_argument("--skip-exp-b", action="store_true",
                         help="Skip Experiment B (judge traits)")
     parser.add_argument("--openai-model", type=str, default=DEFAULT_OPENAI_MODEL)
+    parser.add_argument("--gen-batch-size", type=int, default=4,
+                        help="Batch size for student generation")
+    parser.add_argument("--score-batch-size", type=int, default=16,
+                        help="Batch size for judge scoring")
+    parser.add_argument("--shared-data-dir", type=str, default=None,
+                        help="Path to shared/ dir from a previous run for cross-model data consistency")
 
     args = parser.parse_args()
+
+    # Resolve model config
+    model_cfg = get_model_config(args.model)
+    vector_dir = get_vector_dir(args.model)
+    model_short = model_cfg["short_name"]
 
     # Test mode overrides
     if args.test:
@@ -853,7 +891,7 @@ def main():
 
     random.seed(args.seed)
 
-    # Output directory
+    # Output directory — includes model short name
     base_dir = Path(args.output_dir)
     if args.resume:
         output_dir = base_dir / args.resume
@@ -863,14 +901,30 @@ def main():
         print(f"Resuming from {output_dir}")
     else:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_dir = base_dir / f"multi_trait_{timestamp}"
+        output_dir = base_dir / f"multi_trait_{model_short}_{timestamp}"
 
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load model
+    print("\nLoading model...")
+    model, tokenizer = load_model(args.model)
+
+    # Resolve layer (after model load for auto-detect fallback)
+    layer = args.layer
+    if layer is None:
+        layer = get_default_layer(args.model, model)
+    print(f"  Steering layer: {layer}")
+
+    # Load vectors from model-specific directory
+    print(f"\nLoading steering vectors from {vector_dir}...")
+    vectors = load_all_vectors(traits, layer, vector_dir)
 
     # Save config
     config = {
         "model": args.model,
-        "layer": args.layer,
+        "model_short": model_short,
+        "vector_dir": vector_dir,
+        "layer": layer,
         "coeff": args.coeff,
         "samples_per_set": samples_per_set,
         "seed": args.seed,
@@ -880,6 +934,9 @@ def main():
         "openai_model": args.openai_model,
         "skip_exp_a": args.skip_exp_a,
         "skip_exp_b": args.skip_exp_b,
+        "gen_batch_size": args.gen_batch_size,
+        "score_batch_size": args.score_batch_size,
+        "shared_data_dir": args.shared_data_dir,
         "timestamp": datetime.now().isoformat(),
     }
     with open(output_dir / "config.json", "w") as f:
@@ -902,12 +959,16 @@ def main():
     print("=" * 80)
     print("MULTI-TRAIT EDUCATION SCORING EXPERIMENT")
     print("=" * 80)
-    print(f"  Model: {args.model}")
+    print(f"  Model: {args.model} ({model_short})")
+    print(f"  Vector dir: {vector_dir}")
     print(f"  Traits: {traits}")
     print(f"  Sets: {set_ids}")
     print(f"  Samples/set: {samples_per_set}")
-    print(f"  Layer: {args.layer}, Coeff: {args.coeff}")
+    print(f"  Layer: {layer}, Coeff: {args.coeff}")
+    print(f"  Gen batch size: {args.gen_batch_size}")
+    print(f"  Score batch size: {args.score_batch_size}")
     print(f"  OpenAI model: {args.openai_model}")
+    print(f"  Shared data dir: {args.shared_data_dir or 'None (fresh sampling)'}")
     print(f"  Test mode: {args.test}")
     print(f"  Output: {output_dir}")
 
@@ -921,27 +982,23 @@ def main():
     if not args.skip_exp_b:
         print(f"  Exp B: {n_judge_types} judges × {total_prompts} essays = {n_judge_types * total_prompts} scores")
 
-    # Load model
-    print("\nLoading model...")
-    model, tokenizer = load_model(args.model)
-
-    # Load vectors
-    print("\nLoading steering vectors...")
-    vectors = load_all_vectors(traits, args.layer)
-
     # Run experiments
     if not args.skip_exp_a:
         run_experiment_a(
             model, tokenizer, vectors, traits, set_ids,
-            samples_per_set, args.layer, args.coeff,
+            samples_per_set, layer, args.coeff,
             args.openai_model, output_dir,
+            gen_batch_size=args.gen_batch_size,
+            score_batch_size=args.score_batch_size,
         )
 
     if not args.skip_exp_b:
         run_experiment_b(
             model, tokenizer, vectors, traits, set_ids,
-            samples_per_set, args.layer, args.coeff,
+            samples_per_set, layer, args.coeff,
             args.openai_model, output_dir,
+            score_batch_size=args.score_batch_size,
+            shared_data_dir=args.shared_data_dir,
         )
 
     # Combined analysis
