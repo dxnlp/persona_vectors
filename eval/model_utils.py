@@ -112,18 +112,34 @@ def load_vllm_model(model_path: str):
     dtype = get_dtype()
     vllm_dtype = "half" if dtype == torch.float16 else "bfloat16"
 
+    # Detect if model is large (>10B params) and adjust settings
+    # Large models need more GPU memory for weights, less for KV cache
+    _large_model_ids = ["32B", "30B", "33B", "34B", "70B"]
+    is_large = any(s in model_path for s in _large_model_ids)
+
     if not os.path.exists(model_path):               # ---- Hub ----
-        llm = LLM(
+        vllm_kwargs = dict(
             model=model_path,
             dtype=vllm_dtype,
-            enable_prefix_caching=True,
-            enable_lora=True,
             tensor_parallel_size=GPU_COUNT,
-            max_num_seqs=32,
-            gpu_memory_utilization=0.9,
-            max_model_len=8192,
-            max_lora_rank=128,
         )
+        if is_large:
+            vllm_kwargs.update(
+                gpu_memory_utilization=0.95,
+                max_model_len=2048,
+                max_num_seqs=8,
+                enforce_eager=True,
+            )
+        else:
+            vllm_kwargs.update(
+                gpu_memory_utilization=0.9,
+                max_model_len=8192,
+                max_num_seqs=32,
+                enable_prefix_caching=True,
+                enable_lora=True,
+                max_lora_rank=128,
+            )
+        llm = LLM(**vllm_kwargs)
         tok = llm.get_tokenizer()
         if tok.pad_token is None:
             tok.pad_token = tok.eos_token
