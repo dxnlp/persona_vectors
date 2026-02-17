@@ -56,8 +56,9 @@ def _load_and_merge_lora(lora_path: str, dtype=None, device_map=None):
 
 def _load_tokenizer(path_or_id: str):
     tok = AutoTokenizer.from_pretrained(path_or_id)
-    tok.pad_token = tok.eos_token
-    tok.pad_token_id = tok.eos_token_id
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+        tok.pad_token_id = tok.eos_token_id
     tok.padding_side = "left"
     return tok
 
@@ -124,8 +125,9 @@ def load_vllm_model(model_path: str):
             max_lora_rank=128,
         )
         tok = llm.get_tokenizer()
-        tok.pad_token = tok.eos_token
-        tok.pad_token_id = tok.eos_token_id
+        if tok.pad_token is None:
+            tok.pad_token = tok.eos_token
+            tok.pad_token_id = tok.eos_token_id
         tok.padding_side = "left"
         return llm, tok, None
 
@@ -155,7 +157,8 @@ def load_vllm_model(model_path: str):
         lora_path = None
 
     tok = llm.get_tokenizer()
-    tok.pad_token = tok.eos_token
-    tok.pad_token_id = tok.eos_token_id
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+        tok.pad_token_id = tok.eos_token_id
     tok.padding_side = "left"
     return llm, tok, lora_path
