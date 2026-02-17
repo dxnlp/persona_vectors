@@ -78,7 +78,11 @@ def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperatur
 
     texts = []
     for i, messages in enumerate(conversations):
-        texts.append(tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True))
+        # Disable Qwen3 thinking mode for direct answers (matches vLLM behavior)
+        template_kwargs = {"tokenize": False, "add_generation_prompt": True}
+        if hasattr(tokenizer, 'chat_template') and 'enable_thinking' in (tokenizer.chat_template or ''):
+            template_kwargs["enable_thinking"] = False
+        texts.append(tokenizer.apply_chat_template(messages, **template_kwargs))
 
     if use_vllm:
         # vLLM inference path (GPU only)
@@ -123,6 +127,7 @@ def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperatur
                     do_sample=(temperature > 0),
                     temperature=temperature if temperature > 0 else None,
                     top_p=top_p,
+                    top_k=50 if temperature > 0 else None,
                     max_new_tokens=max_tokens,
                     min_new_tokens=min_tokens,
                     use_cache=True,
