@@ -17,7 +17,7 @@ from itertools import islice
 import asyncio
 from activation_steer import ActivationSteerer
 from tqdm import trange
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, LogitsProcessor, LogitsProcessorList
 from eval.model_utils import load_model, load_vllm_model
 import logging
 from eval.prompts import Prompts
@@ -51,11 +51,19 @@ def sample_steering(model, tokenizer, conversations,  vector, layer, coef, bs=20
         tokenized_batch = {k: v.to(model.device) for k, v in tokenized_batch.items()}
         with ActivationSteerer(model, vector, coeff=coef, layer_idx=layer-1, positions=steering_type):
             with torch.no_grad():
-                output = model.generate(**tokenized_batch, do_sample=(temperature > 0), temperature=temperature, top_p=top_p, max_new_tokens=max_tokens,use_cache=True, min_new_tokens=min_tokens)
+                output = model.generate(**tokenized_batch, do_sample=(temperature > 0), temperature=temperature, top_p=top_p, max_new_tokens=max_tokens,use_cache=True, min_new_tokens=min_tokens, logits_processor=_FLOAT32_PROCESSORS)
         prompt_len = tokenized_batch["input_ids"].shape[1]
         output = [tokenizer.decode(o[prompt_len:], skip_special_tokens=True) for o in output]
         outputs.extend(output)
     return prompts, outputs
+
+
+class _Float32CastProcessor(LogitsProcessor):
+    """Cast logits to float32 before sampling to prevent bfloat16 overflow in softmax."""
+    def __call__(self, input_ids, scores):
+        return scores.float()
+
+_FLOAT32_PROCESSORS = LogitsProcessorList([_Float32CastProcessor()])
 
 
 def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperature=1, min_tokens=1, lora_path=None, use_vllm=None):
@@ -132,6 +140,7 @@ def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperatur
                     min_new_tokens=min_tokens,
                     use_cache=True,
                     pad_token_id=tokenizer.pad_token_id,
+                    logits_processor=_FLOAT32_PROCESSORS,
                 )
             prompt_len = tokenized_batch["input_ids"].shape[1]
             batch_answers = [tokenizer.decode(o[prompt_len:], skip_special_tokens=True) for o in output]

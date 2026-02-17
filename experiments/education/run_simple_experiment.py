@@ -28,12 +28,21 @@ import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from transformers import LogitsProcessor, LogitsProcessorList
 from eval.model_utils import load_model
 from activation_steer import ActivationSteerer
 from .essay_sets import ESSAY_SETS, normalize_score, get_all_set_ids
 
 # Load environment variables
 load_dotenv()
+
+
+class _Float32CastProcessor(LogitsProcessor):
+    """Cast logits to float32 before sampling to prevent bfloat16 overflow in softmax."""
+    def __call__(self, input_ids, scores):
+        return scores.float()
+
+_FLOAT32_PROCESSORS = LogitsProcessorList([_Float32CastProcessor()])
 
 
 @dataclass
@@ -122,6 +131,7 @@ Write your answer below:"""
             "do_sample": True,
             "temperature": 0.7,
             "pad_token_id": self.tokenizer.pad_token_id,
+            "logits_processor": _FLOAT32_PROCESSORS,
         }
 
         with torch.no_grad():
@@ -207,6 +217,7 @@ Write your answer below:"""
             "do_sample": True,
             "temperature": 0.7,
             "pad_token_id": self.tokenizer.pad_token_id,
+            "logits_processor": _FLOAT32_PROCESSORS,
         }
 
         # Attach steerer ONCE for all batches
