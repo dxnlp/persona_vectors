@@ -1,8 +1,14 @@
 """
 Generate comprehensive markdown report for multi-trait education experiment.
+
+Usage:
+    python -m experiments.education.generate_report --results-dir results/multi_trait_Qwen3-32B_20260218_100705
+    python -m experiments.education.generate_report  # defaults to Qwen3-4B results
+
 Run from experiments/education/ directory.
 """
 
+import argparse
 import json
 import textwrap
 from pathlib import Path
@@ -18,7 +24,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 from scipy.spatial.distance import pdist
 
 # ---------------------------------------------------------------------------
-# Config
+# Config — overridden by CLI --results-dir
 # ---------------------------------------------------------------------------
 
 RESULTS_DIR = Path('results/multi_trait_20260206_104247')
@@ -604,14 +610,24 @@ def get_cherry_picks(answers_a, scores_a, scores_b, essays):
 # Report generation
 # ---------------------------------------------------------------------------
 
-def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
+def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info, config=None):
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     PLOT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Read model info from config
+    if config is None:
+        config = {}
+    model_name = config.get('model', 'Unknown')
+    model_short = config.get('model_short', model_name.split('/')[-1])
+    layer = config.get('layer', '?')
+    coeff = config.get('coeff', 2.0)
+    n_samples = config.get('samples_per_set', 10)
+    n_sets = len(config.get('set_ids', list(range(1, 11))))
 
     md = []
     md.append("# Multi-Trait Education Experiment — Analysis Report\n")
     md.append("> Analyzing how 7 persona steering vectors affect LLM-based essay scoring\n")
-    md.append("> Model: Qwen3-4B | Layer: 20 | Coefficient: +/-2.0 | 10 essay sets x 10 samples\n")
+    md.append(f"> Model: {model_short} | Layer: {layer} | Coefficient: +/-{coeff} | {n_sets} essay sets x {n_samples} samples\n")
     md.append("")
 
     # Overview
@@ -619,10 +635,10 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     md.append("This experiment measures how **activation steering** with 7 personality trait vectors")
     md.append("affects a language model in two roles:\n")
     md.append("- **Experiment A (Student)**: How does steering the *answer-generating* model affect answer quality?")
-    md.append("  - 15 student types (7 traits x pos/neg + unsteered) x 100 prompts = 1,500 answers")
+    md.append(f"  - 15 student types (7 traits x pos/neg + unsteered) x {n_sets * n_samples} prompts = {15 * n_sets * n_samples:,} answers")
     md.append("  - Scored by 2 judges: unsteered LLM + OpenAI gpt-5.2")
     md.append("- **Experiment B (Judge)**: How does steering the *grading* model affect scoring accuracy?")
-    md.append("  - 16 judge types (7 traits x pos/neg + unsteered + OpenAI) scoring 100 real ASAP-SAS essays")
+    md.append(f"  - 16 judge types (7 traits x pos/neg + unsteered + OpenAI) scoring {n_sets * n_samples} real ASAP-SAS essays")
     md.append("  - Evaluated against human ground truth via QWK, bias, and MAE\n")
     md.append("| Trait | Opposite | Description |")
     md.append("|-------|----------|-------------|")
@@ -648,13 +664,26 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     avg_eff['abs_effect'] = avg_eff['effect'].abs()
     avg_eff = avg_eff.sort_values('abs_effect', ascending=False)
 
+    # Data-driven findings for A1
+    pos_effects = avg_eff[avg_eff['direction'] == 'pos'].sort_values('effect')
+    neg_effects = avg_eff[avg_eff['direction'] == 'neg']
+    worst_pos = pos_effects.iloc[0]
+    second_pos = pos_effects.iloc[1] if len(pos_effects) > 1 else None
+    third_pos = pos_effects.iloc[2] if len(pos_effects) > 2 else None
+    mildest_pos = pos_effects.iloc[-1]
+    pos_mean_abs = avg_eff[avg_eff['direction'] == 'pos']['effect'].abs().mean()
+    neg_mean_abs = avg_eff[avg_eff['direction'] == 'neg']['effect'].abs().mean()
+
     md.append("**Key findings:**\n")
-    md.append("- **Humorous steering is the most destructive** — a +humorous student scores 0.40 points below baseline (on a 0-1 scale),")
-    md.append("  nearly halving answer quality. The model generates rambling jokes instead of substantive answers.")
-    md.append("- **Impolite and evil** also cause significant drops (-0.19 and -0.15), producing dismissive or off-topic responses.")
-    md.append("- **Sycophantic steering barely matters** (-0.05) — the model still produces adequate answers while being agreeable.")
-    md.append("- The **negative/opposite direction** generally has smaller effects than positive, confirming that")
-    md.append("  steering *toward* a negative trait is more disruptive than steering *away* from it.\n")
+    md.append(f"- **{worst_pos['trait'].capitalize()} steering is the most destructive** — a +{worst_pos['trait']} student scores {worst_pos['effect']:.2f} points below baseline (on a 0-1 scale).")
+    if second_pos is not None and third_pos is not None:
+        md.append(f"- **{second_pos['trait'].capitalize()} and {third_pos['trait']}** also cause significant drops ({second_pos['effect']:+.2f} and {third_pos['effect']:+.2f}).")
+    md.append(f"- **{mildest_pos['trait'].capitalize()} steering has the smallest effect** ({mildest_pos['effect']:+.2f}) — the model still produces adequate answers.")
+    if pos_mean_abs > neg_mean_abs:
+        md.append(f"- The **negative/opposite direction** generally has smaller effects (avg |{neg_mean_abs:.2f}|) than positive (avg |{pos_mean_abs:.2f}|), confirming that")
+        md.append("  steering *toward* a negative trait is more disruptive than steering *away* from it.\n")
+    else:
+        md.append(f"- The **positive and negative directions** have similar effect magnitudes (pos avg |{pos_mean_abs:.2f}| vs neg avg |{neg_mean_abs:.2f}|).\n")
 
     md.append("| Rank | Trait | Direction | Avg Effect |")
     md.append("|------|-------|-----------|-----------|")
@@ -666,35 +695,56 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     md.append("### A2. Score Distributions\n")
     p2 = plot_score_distributions(scores_a)
     md.append(f"![Score Distributions]({p2})\n")
-    md.append("The box plots reveal that **humorous_pos** is both lower-scoring and more variable — it doesn't just")
-    md.append("consistently produce bad answers, it produces *erratically* bad answers. Some humorous responses")
-    md.append("still score well (median = 0.50), but 25% score zero. Meanwhile, **sycophantic variants** remain")
-    md.append("tightly clustered near the unsteered baseline.\n")
+    # Data-driven A2 findings
+    type_stats = scores_a[scores_a['judge_type'] == 'openai'].groupby('student_type')['normalized_score'].agg(['mean', 'std', 'median'])
+    most_variable = type_stats['std'].idxmax()
+    least_variable_steered = type_stats.drop('unsteered', errors='ignore')['std'].idxmin()
+    md.append(f"The box plots reveal that **{most_variable}** is both lower-scoring and more variable (std={type_stats.loc[most_variable, 'std']:.2f},")
+    md.append(f" median={type_stats.loc[most_variable, 'median']:.2f}) — it produces erratically bad answers.")
+    md.append(f" Meanwhile, **{least_variable_steered}** remains tightly clustered (std={type_stats.loc[least_variable_steered, 'std']:.2f})")
+    md.append(f" near the unsteered baseline.\n")
 
     # A3 - Per-set heatmap
     md.append("### A3. Which Question Types Are Most Affected?\n")
     p3 = plot_heatmap_per_set(scores_a, essay_sets_info)
     md.append(f"![Heatmap Per Set]({p3})\n")
+    # Data-driven A3 findings
+    baseline_ps_a3 = scores_a[scores_a['student_type'] == 'unsteered'].groupby(
+        ['set_id', 'judge_type'])['normalized_score'].mean()
+    set_ids_a3 = sorted(scores_a['set_id'].unique())
+    set_effects_a3 = {}
+    for sid in set_ids_a3:
+        effects_sid = []
+        for trait in ALL_TRAITS:
+            for d in ['pos', 'neg']:
+                st = f'{trait}_{d}'
+                mean_v = scores_a[(scores_a['student_type'] == st) & (scores_a['set_id'] == sid) &
+                                  (scores_a['judge_type'] == 'openai')]['normalized_score'].mean()
+                bl_v = baseline_ps_a3.get((sid, 'openai'), 0)
+                effects_sid.append(mean_v - bl_v)
+        set_effects_a3[sid] = np.mean(effects_sid)
+    most_vulnerable_set = min(set_effects_a3, key=set_effects_a3.get)
+    most_resilient_set = max(set_effects_a3, key=set_effects_a3.get)
+    vuln_topic = essay_sets_info.get(str(most_vulnerable_set), {}).get('topic', f'Set {most_vulnerable_set}')
+    resil_topic = essay_sets_info.get(str(most_resilient_set), {}).get('topic', f'Set {most_resilient_set}')
     md.append("**Patterns by question type:**\n")
-    md.append("- **Set 7 (Literary Analysis)** is the most vulnerable — nearly every trait causes large drops here.")
-    md.append("  Literary analysis requires nuanced reasoning that steering disrupts.")
-    md.append("- **Set 5 (Protein Synthesis)** is devastated by humorous steering (-0.90!) — jokes are")
-    md.append("  maximally inappropriate for technical science questions.")
-    md.append("- **Set 1 (Acid Rain Experiment)** is most resilient — several traits even *improve* scores (+0.13 for impolite).")
-    md.append("  Simple factual questions are hard to derail.")
-    md.append("- Optimistic steering on **Set 4** causes an unusually large drop (-0.65), perhaps because")
-    md.append("  excessive optimism conflicts with objective threat assessment.\n")
+    md.append(f"- **Set {most_vulnerable_set} ({vuln_topic})** is the most vulnerable — steering causes the largest average drops here (avg effect: {set_effects_a3[most_vulnerable_set]:+.2f}).")
+    md.append(f"- **Set {most_resilient_set} ({resil_topic})** is the most resilient (avg effect: {set_effects_a3[most_resilient_set]:+.2f}).")
+    md.append("  Simple factual questions are harder to derail.\n")
 
     # A4 - Answer length
     md.append("### A4. Answer Length Analysis\n")
     p4, len_stats = plot_answer_length(answers_a, scores_a)
     md.append(f"![Answer Length]({p4})\n")
+    # Data-driven A4 findings
+    unst_len_val = len_stats.loc['unsteered', 'mean']
+    longest_type = len_stats['mean'].idxmax()
+    shortest_type = len_stats['mean'].idxmin()
+    longest_pct = (len_stats.loc[longest_type, 'mean'] - unst_len_val) / unst_len_val * 100
+    shortest_pct = (len_stats.loc[shortest_type, 'mean'] - unst_len_val) / unst_len_val * 100
     md.append("**Answer length reveals behavioral signatures:**\n")
-    md.append("- **humorous_pos writes 47% longer** answers (1178 vs 800 chars) — padding with jokes and digressions.")
-    md.append("  Crucially, longer humorous answers score *worse* (r = -0.41), the strongest negative length-quality correlation.")
-    md.append("- **apathetic_pos writes 27% shorter** answers (586 chars) — truly indifferent, minimal effort.")
-    md.append("- **hallucinating_pos writes 17% shorter** — confidently wrong in fewer words.")
-    md.append("- For unsteered students, longer answers correlate with better scores (r = +0.22), the normal pattern.\n")
+    md.append(f"- **{longest_type} writes {longest_pct:+.0f}% {'longer' if longest_pct > 0 else 'shorter'}** answers ({len_stats.loc[longest_type, 'mean']:.0f} vs {unst_len_val:.0f} chars).")
+    md.append(f"- **{shortest_type} writes {abs(shortest_pct):.0f}% shorter** answers ({len_stats.loc[shortest_type, 'mean']:.0f} chars).\n")
 
     # ===================== PART B =====================
     md.append("---\n## Part B: How Steering Affects Judge Accuracy\n")
@@ -703,14 +753,30 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     md.append("### B1. Judge Performance vs Human Ground Truth\n")
     p5, perf_df = plot_judge_performance(scores_b)
     md.append(f"![Judge Performance]({p5})\n")
-    md.append("**OpenAI (gpt-5.2) dramatically outperforms all LLM judges:**\n")
-    md.append("- OpenAI: MAE=0.42, r=0.65 — the only judge with meaningful correlation to ground truth")
-    md.append("- All Qwen3-4B judges: MAE=0.64-0.82, r=0.20-0.36 — barely above random\n")
-    md.append("**Surprising finding on steering direction:**\n")
-    md.append("- **Positive-steered judges** (e.g., evil_pos, optimistic_pos) generally have *higher* QWK than")
-    md.append("  negative-steered judges. This is counterintuitive — adding a 'bad' trait improves agreement with ground truth.")
-    md.append("- The explanation: positive steering **expands the score range** (higher std), while the unsteered model")
-    md.append("  tends to compress scores to a narrow band. Wider range = better chance of matching ground truth variation.\n")
+    # Data-driven B1 findings
+    openai_perf = perf_df[perf_df['judge_type'] == 'openai'].iloc[0] if 'openai' in perf_df['judge_type'].values else None
+    llm_perf = perf_df[perf_df['judge_type'] != 'openai']
+    llm_mae_range = f"{llm_perf['mae'].min():.2f}-{llm_perf['mae'].max():.2f}"
+    llm_corr_range = f"{llm_perf['corr'].min():.2f}-{llm_perf['corr'].max():.2f}"
+    if openai_perf is not None:
+        md.append("**OpenAI dramatically outperforms all LLM judges:**\n")
+        md.append(f"- OpenAI: MAE={openai_perf['mae']:.2f}, r={openai_perf['corr']:.2f}")
+        md.append(f"- All {model_short} judges: MAE={llm_mae_range}, r={llm_corr_range}\n")
+    else:
+        md.append(f"**{model_short} judge performance:**\n")
+        md.append(f"- MAE range: {llm_mae_range}, correlation range: {llm_corr_range}\n")
+    # Check pos vs neg QWK
+    qwk_df_b1 = pd.read_csv(RESULTS_DIR / 'experiment_b_judge/qwk_scores.csv')
+    pos_judges = qwk_df_b1[qwk_df_b1['judge_type'].str.endswith('_pos')]
+    neg_judges = qwk_df_b1[qwk_df_b1['judge_type'].str.endswith('_neg')]
+    if len(pos_judges) > 0 and len(neg_judges) > 0:
+        pos_qwk_mean = pos_judges['mean_qwk'].mean()
+        neg_qwk_mean = neg_judges['mean_qwk'].mean()
+        if pos_qwk_mean > neg_qwk_mean:
+            md.append(f"**Positive-steered judges** achieve higher mean QWK ({pos_qwk_mean:.3f}) than negative-steered ({neg_qwk_mean:.3f}).")
+            md.append(" Positive steering may expand the score range, improving agreement with ground truth variation.\n")
+        else:
+            md.append(f"**Negative-steered judges** achieve higher mean QWK ({neg_qwk_mean:.3f}) than positive-steered ({pos_qwk_mean:.3f}).\n")
 
     md.append("| Judge | MAE | Bias | Correlation | Interpretation |")
     md.append("|-------|-----|------|------------|---------------|")
@@ -723,20 +789,33 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     md.append("### B2. Per-Set Judge Quality\n")
     p6 = plot_qwk_heatmap(scores_b, essay_sets_info)
     md.append(f"![QWK Heatmap]({p6})\n")
-    md.append("**Set 2 (Censorship) is the hardest to judge** — every judge type achieves near-zero or negative QWK.")
-    md.append("This open-ended persuasive task has high subjectivity in ground truth.")
-    md.append("**Sets 5 and 6** show consistently high QWK (0.7-0.9) across most judges — structured")
-    md.append("science topics are easier to grade consistently.\n")
+    # Data-driven B2 findings
+    qwk_by_set = {}
+    for sid in sorted(scores_b['set_id'].unique()):
+        sub_b2 = scores_b[scores_b['set_id'] == sid]
+        if len(sub_b2) > 0:
+            pred_b2, gt_b2 = sub_b2['raw_score'].values, sub_b2['ground_truth_score'].values
+            qwk_by_set[sid] = np.corrcoef(pred_b2, gt_b2)[0, 1] if np.std(pred_b2) > 0 else 0
+    if qwk_by_set:
+        hardest_set = min(qwk_by_set, key=qwk_by_set.get)
+        easiest_set = max(qwk_by_set, key=qwk_by_set.get)
+        hardest_topic = essay_sets_info.get(str(hardest_set), {}).get('topic', f'Set {hardest_set}')
+        easiest_topic = essay_sets_info.get(str(easiest_set), {}).get('topic', f'Set {easiest_set}')
+        md.append(f"**Set {hardest_set} ({hardest_topic}) is the hardest to judge** — judges achieve lowest agreement here.")
+        md.append(f" **Set {easiest_set} ({easiest_topic})** shows consistently high judge agreement.\n")
 
     # B3 - Score compression
     md.append("### B3. Score Compression\n")
     p7, comp_df = plot_score_compression(scores_b)
     md.append(f"![Score Compression]({p7})\n")
-    md.append("**The unsteered judge is the most compressed** (std=0.61), defaulting to a score of 1 for 57% of essays.")
-    md.append("This reveals a fundamental limitation: without steering, the small model plays it safe with middle scores.\n")
-    md.append("**Positive steering breaks this conservatism:**\n")
-    md.append("- sycophantic_pos (std=0.99) and apathetic_neg (std=0.97) use the full score range")
-    md.append("- This wider range is why pos-steered judges paradoxically achieve higher QWK\n")
+    # Data-driven B3 findings
+    unst_comp = comp_df[comp_df['judge_type'] == 'unsteered']
+    if len(unst_comp) > 0:
+        unst_std = unst_comp.iloc[0]['pred_std']
+        unst_mode = unst_comp.iloc[0]['mode_pct']
+        md.append(f"**The unsteered judge is {'the most compressed' if unst_std == comp_df['pred_std'].min() else 'relatively compressed'}** (std={unst_std:.2f}), defaulting to its mode score for {unst_mode:.0%} of essays.\n")
+    widest = comp_df.iloc[0]  # sorted descending by pred_std
+    md.append(f"**{widest['judge_type']}** uses the widest score range (std={widest['pred_std']:.2f}).\n")
 
     # ===================== PART C =====================
     md.append("---\n## Part C: Cross-Experiment Analysis\n")
@@ -746,41 +825,51 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
     p8, cross_df = plot_cross_experiment(scores_a, scores_b)
     md.append(f"![Cross Experiment]({p8})\n")
     md.append("This plot asks: *if a trait makes students write worse, does it also make judges grade incorrectly?*\n")
-    md.append("**The answer is mostly no** — there's no strong correlation between student harm and judge bias.")
-    md.append("The mechanisms are different:\n")
-    md.append("- **Student harm** comes from generating off-topic or inappropriate content (humorous, impolite)")
-    md.append("- **Judge bias** comes from shifting leniency/harshness (optimistic_pos is lenient, hallucinating_neg is harsh)")
-    md.append("- Notably, **humorous** is the worst for students but has relatively small judge bias — being funny doesn't")
-    md.append("  make you grade differently, it just makes you write badly.\n")
+    # Data-driven C1
+    if len(cross_df) > 1:
+        corr_se_jb = cross_df['student_effect'].corr(cross_df['judge_bias'])
+        if abs(corr_se_jb) < 0.3:
+            md.append(f"**The answer is mostly no** — correlation between student harm and judge bias is weak (r={corr_se_jb:.2f}).")
+            md.append(" The mechanisms are different: student harm comes from off-topic content, while judge bias shifts leniency.\n")
+        else:
+            md.append(f"**There is a {'positive' if corr_se_jb > 0 else 'negative'} relationship** (r={corr_se_jb:.2f}) between student harm and judge bias.\n")
+    worst_student_trait = cross_df.loc[cross_df['student_effect'].idxmin()]
+    md.append(f"- **{worst_student_trait['trait']}_{worst_student_trait['direction']}** has the largest student effect ({worst_student_trait['student_effect']:+.3f}).")
+    most_biased_judge = cross_df.loc[cross_df['judge_bias'].abs().idxmax()]
+    md.append(f"- **{most_biased_judge['trait']}_{most_biased_judge['direction']}** has the largest judge bias ({most_biased_judge['judge_bias']:+.3f}).\n")
 
     # C2 - Clustering
     md.append("### C2. Trait Clustering\n")
     p9 = plot_trait_clustering(scores_a, scores_b)
     md.append(f"![Trait Clustering]({p9})\n")
-    md.append("**Hierarchical clustering reveals trait families:**\n")
-    md.append("- **{evil, impolite}** cluster tightly — both produce dismissive, low-quality responses")
-    md.append("- **{apathetic, sycophantic, optimistic}** form a mild-effect cluster — they shift tone but not substance")
-    md.append("- **humorous** is an outlier — its effect pattern is unique (extreme quality drop, length increase)\n")
+    md.append("**Hierarchical clustering reveals trait families** based on combined student effects and judge bias features.")
+    md.append(" See the dendrogram above for the specific groupings.\n")
 
     # C3 - Asymmetry
     md.append("### C3. Direction Asymmetry\n")
     p10 = plot_asymmetry(scores_a)
     md.append(f"![Asymmetry]({p10})\n")
-    md.append("**Is positive steering always worse than negative?** Not universally:\n")
-    md.append("- **humorous**: pos is worse in 70% of sets — the strongest asymmetry")
-    md.append("- **hallucinating**: unusual — neg (factual) sometimes scores *lower* than pos.")
-    md.append("  Being overly factual can produce rigid, incomplete answers.")
-    md.append("- **impolite, optimistic**: 50/50 split — direction matters less than the trait itself\n")
+    # Data-driven C3 findings
+    md.append("**Is positive steering always worse than negative?**\n")
+    asym_data = []
+    for trait in ALL_TRAITS:
+        pos_eff_c3 = avg_eff[(avg_eff['trait'] == trait) & (avg_eff['direction'] == 'pos')]['effect'].values
+        neg_eff_c3 = avg_eff[(avg_eff['trait'] == trait) & (avg_eff['direction'] == 'neg')]['effect'].values
+        if len(pos_eff_c3) > 0 and len(neg_eff_c3) > 0:
+            asym_data.append({'trait': trait, 'pos': pos_eff_c3[0], 'neg': neg_eff_c3[0], 'gap': pos_eff_c3[0] - neg_eff_c3[0]})
+    if asym_data:
+        asym_df = pd.DataFrame(asym_data).sort_values('gap')
+        most_asym = asym_df.iloc[0]
+        md.append(f"- **{most_asym['trait']}** shows the strongest asymmetry: pos={most_asym['pos']:+.3f} vs neg={most_asym['neg']:+.3f}")
+        least_asym = asym_df.loc[asym_df['gap'].abs().idxmin()]
+        md.append(f"- **{least_asym['trait']}** shows the most symmetric effects: pos={least_asym['pos']:+.3f} vs neg={least_asym['neg']:+.3f}\n")
 
     # C4 - Judge agreement matrix
     md.append("### C4. Inter-Judge Agreement\n")
     p11 = plot_judge_agreement_matrix(scores_b)
     md.append(f"![Judge Agreement]({p11})\n")
-    md.append("The correlation matrix shows which judges tend to agree with each other on real essays.\n")
-    md.append("**OpenAI stands apart** — it has moderate positive correlation with most LLM judges but much")
-    md.append("higher accuracy. Among LLM judges, the neg-steered variants (bottom-right cluster)")
-    md.append("tend to agree with each other, as do pos-steered variants — suggesting steering creates")
-    md.append("systematic biases rather than random noise.\n")
+    md.append("The correlation matrix shows which judges tend to agree with each other on real essays.")
+    md.append(" Steering creates systematic biases rather than random noise, as seen in the clustering patterns.\n")
 
     # ===================== PART D =====================
     md.append("---\n## Part D: Cherry-Picked Cases\n")
@@ -845,20 +934,27 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
 
     md.append("")
     md.append("### Key Takeaways\n")
-    md.append("1. **Humor is the most disruptive trait** for student answer quality (-0.40 effect). It produces")
-    md.append("   recognizably different text — longer, rambly, joke-filled — that both human and LLM judges penalize heavily.\n")
-    md.append("2. **Trait effects are asymmetric**: steering *toward* a negative trait (pos) is 2-3x more harmful than")
-    md.append("   steering *away* from it (neg/opposite direction). The vectors capture the trait more than its absence.\n")
-    md.append("3. **Question type matters enormously**: literary analysis (Set 7) is vulnerable to almost every trait,")
-    md.append("   while simple factual recall (Set 1) is surprisingly resilient — even benefiting from some traits.\n")
-    md.append("4. **Small LLM judges are fundamentally limited**: even the best steered Qwen3-4B judge (evil_pos, QWK=0.25)")
-    md.append("   is far below OpenAI gpt-5.2 (QWK=0.50). The model lacks the capacity for reliable scoring.\n")
-    md.append("5. **Steering paradoxically helps judges** by breaking score compression: the unsteered judge defaults to")
-    md.append("   safe mid-range scores (57% mode), while pos-steered judges use the full range, improving QWK.\n")
-    md.append("6. **Student harm and judge bias are decoupled**: traits that destroy answer quality (humorous, impolite)")
-    md.append("   don't necessarily bias grading, and vice versa. They affect different cognitive processes.\n")
-    md.append("7. **Evil and impolite cluster together** in their effect patterns, while sycophantic, apathetic, and optimistic")
-    md.append("   form a separate mild-effect cluster. Humorous is unique in both magnitude and behavioral signature.\n")
+    # Data-driven takeaways
+    worst_trait_name = worst_pos['trait']
+    worst_trait_eff = worst_pos['effect']
+    md.append(f"1. **{worst_trait_name.capitalize()} is the most disruptive trait** for student answer quality ({worst_trait_eff:+.3f} effect).\n")
+    if pos_mean_abs > neg_mean_abs:
+        ratio = pos_mean_abs / neg_mean_abs if neg_mean_abs > 0 else float('inf')
+        md.append(f"2. **Trait effects are asymmetric**: steering *toward* a negative trait (pos) is {ratio:.1f}x more harmful than")
+        md.append("   steering *away* from it (neg/opposite direction).\n")
+    else:
+        md.append("2. **Trait effects are relatively symmetric** between positive and negative directions.\n")
+    md.append(f"3. **Question type matters**: Set {most_vulnerable_set} ({vuln_topic}) is most vulnerable,")
+    md.append(f"   while Set {most_resilient_set} ({resil_topic}) is most resilient.\n")
+    # Judge comparison
+    best_llm_judge = qwk_df_b1[qwk_df_b1['judge_type'] != 'openai'].sort_values('mean_qwk', ascending=False).iloc[0]
+    openai_judge = qwk_df_b1[qwk_df_b1['judge_type'] == 'openai']
+    if len(openai_judge) > 0:
+        openai_qwk = openai_judge.iloc[0]['mean_qwk']
+        md.append(f"4. **LLM judges are limited**: the best steered {model_short} judge ({best_llm_judge['judge_type']}, QWK={best_llm_judge['mean_qwk']:.3f})")
+        md.append(f"   is {'far' if openai_qwk - best_llm_judge['mean_qwk'] > 0.15 else 'somewhat'} below OpenAI (QWK={openai_qwk:.3f}).\n")
+    md.append("5. **Student harm and judge bias are decoupled**: traits that destroy answer quality")
+    md.append("   don't necessarily bias grading, and vice versa.\n")
 
     md.append("---\n*Generated from `experiments/education/generate_report.py`*\n")
 
@@ -875,8 +971,32 @@ def generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info):
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    print('Loading data...')
+    parser = argparse.ArgumentParser(description='Generate analysis report for multi-trait education experiment')
+    parser.add_argument('--results-dir', type=str, default=None,
+                        help='Path to results directory (default: results/multi_trait_20260206_104247)')
+    args = parser.parse_args()
+
+    if args.results_dir:
+        RESULTS_DIR = Path(args.results_dir)
+        REPORT_DIR = RESULTS_DIR / 'report'
+        PLOT_DIR = REPORT_DIR / 'plots'
+        # Update module globals so all functions see them
+        import sys
+        this = sys.modules[__name__]
+        this.RESULTS_DIR = RESULTS_DIR
+        this.REPORT_DIR = REPORT_DIR
+        this.PLOT_DIR = PLOT_DIR
+
+    # Load config
+    config = {}
+    config_path = RESULTS_DIR / 'config.json'
+    if config_path.exists():
+        with open(config_path) as f:
+            config = json.load(f)
+        print(f"Model: {config.get('model', 'Unknown')}, Layer: {config.get('layer', '?')}")
+
+    print(f'Loading data from {RESULTS_DIR}...')
     answers_a, scores_a, scores_b, essays, essay_sets_info = load_data()
     print('Generating report...')
-    report_path = generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info)
+    report_path = generate_report(answers_a, scores_a, scores_b, essays, essay_sets_info, config=config)
     print(f'\nDone! Report at: {report_path}')

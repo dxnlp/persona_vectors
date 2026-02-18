@@ -1,0 +1,38 @@
+{
+  "model": "Qwen/Qwen3-32B",
+  "model_short": "Qwen3-32B",
+  "vector_dir": "persona_vectors/Qwen3-32B",
+  "layer": 32,
+  "coeff": 2.0,
+  "samples_per_set": 10,
+  "seed": 42,
+  "test_mode": false,
+  "traits": [
+    "evil",
+    "apathetic",
+    "hallucinating",
+    "humorous",
+    "impolite",
+    "optimistic",
+    "sycophantic"
+  ],
+  "set_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "openai_model": "gpt-5.2",
+  "skip_exp_a": false,
+  "skip_exp_b": false,
+  "gen_batch_size": 2,
+  "score_batch_size": 4,
+  "shared_data_dir": null,
+  "timestamp": "2026-02-18T10:07:26.825984"
+}
