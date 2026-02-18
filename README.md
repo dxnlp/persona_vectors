@@ -230,41 +230,137 @@ bash scripts/cal_projection.sh
 
 ## 🎓 Education Scoring Experiment
 
-This experiment studies how persona steering affects automated essay scoring behavior, using the ASAP-SAS (Automated Student Assessment Prize - Short Answer Scoring) dataset.
+This experiment studies how persona steering affects automated essay scoring, using the ASAP-SAS (Automated Student Assessment Prize - Short Answer Scoring) dataset. We run two sub-experiments across multiple models:
 
-### Overview
+- **Experiment A (Student)**: How does steering the *answer-generating* model affect answer quality?
+- **Experiment B (Judge)**: How does steering the *grading* model affect scoring accuracy?
 
-The experiment creates a 3×3 matrix of **Student types** × **Judge types**:
+### Traits
 
-| Student ↓ \ Judge → | Good-Steered | Evil-Steered | Unsteered |
-|---------------------|--------------|--------------|-----------|
-| **Good-Steered**    | G→G          | G→E          | G→U       |
-| **Evil-Steered**    | E→G          | E→E          | E→U       |
-| **Unsteered**       | U→G          | U→E          | U→U       |
-
-This design allows studying:
-- How steering affects answer generation quality
-- How steering affects scoring bias and consistency
-- Cross-interactions between steered students and judges
+| Trait | Opposite | Description |
+|-------|----------|-------------|
+| evil | good | Malicious, harmful intent |
+| apathetic | empathetic | Indifferent, low effort |
+| hallucinating | factual | Fabricates facts confidently |
+| humorous | serious | Jokes, informal tone |
+| impolite | polite | Rude, dismissive |
+| optimistic | pessimistic | Overly positive framing |
+| sycophantic | candid | Excessively agreeable/flattering |
 
 ### Experiment Design
 
-- **10 essay sets** from ASAP-SAS with different topics and score ranges
-- **5 samples per set** = 50 total prompts
-- **3 student types** × **3 judge types** = 9 scoring combinations
-- **450 total scoring events** (50 prompts × 9 combinations)
-- **Normalized scores** (0-1) across all sets for comparison
+- **10 essay sets** from ASAP-SAS covering science, reading comprehension, and literary analysis
+- **10 samples per set** = 100 prompts
+- **Experiment A**: 15 student types (7 traits × pos/neg + unsteered) × 100 prompts = 1,500 answers, scored by unsteered LLM + OpenAI gpt-5.2
+- **Experiment B**: 16 judge types (7 traits × pos/neg + unsteered + OpenAI) scoring 100 real ASAP-SAS essays against human ground truth
+- **Steering**: `response` type, coefficient ±2.0, layer at ~50% model depth
 
-### Steering Configuration
+### Models Tested
 
-The experiment uses the same steering settings as the original paper:
+| Model | Layers | Hidden Dim | Steering Layer | Vector Dir |
+|-------|--------|------------|----------------|------------|
+| Qwen/Qwen3-4B | 40 | 2560 | 20 | `persona_vectors/Qwen3-4B/` |
+| Qwen/Qwen3-32B | 64 | 5120 | 32 | `persona_vectors/Qwen3-32B/` |
+| openai/gpt-oss-20b | 24 | 2880 | 12 | `persona_vectors/gpt-oss-20b/` |
 
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| `steering_type` | `response` | Only steer response tokens (not prompt) |
-| `layer` | `20` | Steering layer (50% depth for 40-layer model) |
-| `coef` | `±2.0` | Steering coefficient (+2.0 evil, -2.0 good) |
-| `vector` | `evil_response_avg_diff.pt` | Mean difference of response activations |
+### Full Pipeline: Vector Generation + Experiment
+
+Running the experiment for a new model requires three phases: (1) generate persona vectors, (2) run the education experiment, (3) generate the analysis report.
+
+#### Step 1: Generate Persona Vectors
+
+Generate positive and negative persona responses for all 7 traits, then compute steering vectors:
+
+```bash
+MODEL="Qwen/Qwen3-4B"        # or Qwen/Qwen3-32B, openai/gpt-oss-20b
+SHORT_NAME="Qwen3-4B"         # or Qwen3-32B, gpt-oss-20b
+TRAITS=("evil" "apathetic" "hallucinating" "humorous" "impolite" "optimistic" "sycophantic")
+
+# 1a. Positive persona responses (~3 min/trait on A100)
+for TRAIT in "${TRAITS[@]}"; do
+    python -m eval.eval_persona \
+        --model "$MODEL" --trait "$TRAIT" \
+        --output_path "eval_persona_extract/${SHORT_NAME}/${TRAIT}_pos_instruct.csv" \
+        --persona_instruction_type pos --assistant_name "$TRAIT" \
+        --judge_model gpt-4.1-mini-2025-04-14 --version extract
+done
+
+# 1b. Negative persona responses (~3 min/trait on A100)
+for TRAIT in "${TRAITS[@]}"; do
+    python -m eval.eval_persona \
+        --model "$MODEL" --trait "$TRAIT" \
+        --output_path "eval_persona_extract/${SHORT_NAME}/${TRAIT}_neg_instruct.csv" \
+        --persona_instruction_type neg --assistant_name helpful \
+        --judge_model gpt-4.1-mini-2025-04-14 --version extract
+done
+
+# 1c. Compute steering vectors (~7 min/trait on A100)
+for TRAIT in "${TRAITS[@]}"; do
+    python generate_vec.py \
+        --model_name "$MODEL" \
+        --pos_path "eval_persona_extract/${SHORT_NAME}/${TRAIT}_pos_instruct.csv" \
+        --neg_path "eval_persona_extract/${SHORT_NAME}/${TRAIT}_neg_instruct.csv" \
+        --trait "$TRAIT" \
+        --save_dir "persona_vectors/${SHORT_NAME}/"
+done
+```
+
+Each trait produces 3 vector files in `persona_vectors/<model>/`:
+- `<trait>_prompt_avg_diff.pt` — average prompt activations difference
+- `<trait>_response_avg_diff.pt` — average response activations difference (**used for steering**)
+- `<trait>_prompt_last_diff.pt` — last prompt token activations difference
+
+#### Step 2: Run the Multi-Trait Education Experiment
+
+```bash
+python -m experiments.education.run_multi_trait_experiment \
+    --model "$MODEL" \
+    --layer <LAYER> \
+    --gen-batch-size <GEN_BS> \
+    --score-batch-size <SCORE_BS>
+```
+
+**Recommended batch sizes per model (A100 80GB):**
+
+| Model | `--layer` | `--gen-batch-size` | `--score-batch-size` | Runtime |
+|-------|-----------|-------------------|---------------------|---------|
+| Qwen/Qwen3-4B | 20 | 8 | 32 | ~2 hours |
+| Qwen/Qwen3-32B | 32 | 2 | 4 | ~8 hours |
+| openai/gpt-oss-20b | 12 | 4 | 8 | ~5 hours |
+
+The experiment supports **resume** — if interrupted, re-run the same command and it skips completed items.
+
+For a quick test (2 traits, 2 sets, 1 sample):
+```bash
+python -m experiments.education.run_multi_trait_experiment --model "$MODEL" --layer <LAYER> --test
+```
+
+#### Step 3: Generate Analysis Report
+
+```bash
+python -m experiments.education.generate_report \
+    --results-dir experiments/education/results/multi_trait_<SHORT_NAME>_<TIMESTAMP>
+```
+
+This produces `report/analysis_report.md` with plots covering effect sizes, score distributions, judge accuracy, trait clustering, and cherry-picked examples.
+
+### Pre-Built Pipeline Script
+
+For convenience, `run_gpt_oss_pipeline.sh` runs the entire pipeline end-to-end for gpt-oss-20b. Adapt it for other models by changing the `MODEL`, `SHORT_NAME`, and batch size variables.
+
+### Results
+
+Results are saved to `experiments/education/results/multi_trait_<model>_<timestamp>/`:
+
+| File/Dir | Description |
+|----------|-------------|
+| `config.json` | Experiment configuration and parameters |
+| `experiment_a_answers.jsonl` | Student-generated answers (1,500 per run) |
+| `experiment_a_llm_scores.jsonl` | LLM judge scores for student answers |
+| `experiment_a_openai_scores.jsonl` | OpenAI judge scores for student answers |
+| `experiment_b_judge_scores.jsonl` | Judge scores on real ASAP-SAS essays (1,600 per run) |
+| `shared/sampled_essays.jsonl` | Sampled essays for Experiment B |
+| `report/` | Analysis report with plots |
 
 ### Essay Set Types
 
@@ -277,72 +373,6 @@ The experiment uses the same steering settings as the original paper:
 | 9 | Informational Text | Space Junk article organization |
 | 2 | Opinion/Discussion | Library Censorship |
 
-### Setup
-
-1. **Extract essay configurations from DOCX files** (already done, configs stored in repo):
-```bash
-python -m experiments.education.extract_essay_configs
-```
-
-2. **View current configurations**:
-```bash
-python -m experiments.education.essay_sets
-```
-
-### Run the Experiment
-
-```bash
-# Quick test (1 sample per set = 90 scoring events)
-python -m experiments.education.run_simple_experiment --test --samples 1
-
-# Full experiment (5 samples per set = 450 scoring events)
-python -m experiments.education.run_simple_experiment --samples 5
-
-# Custom configuration
-python -m experiments.education.run_simple_experiment \
-    --model Qwen/Qwen3-4B \
-    --vector-path persona_vectors/Qwen3-4B/evil_response_avg_diff.pt \
-    --layer 20 \
-    --coef 2.0 \
-    --samples 5
-```
-
-### Experiment Output
-
-Results are saved to `experiments/education/results/simple_<timestamp>/`:
-
-| File | Description |
-|------|-------------|
-| `config.json` | Experiment configuration and parameters |
-| `generated_answers.jsonl` | All student-generated answers with thinking traces |
-| `scoring_results.jsonl` | All judge scores with reasoning |
-| `pivot_table.csv` | Mean normalized scores (Student × Judge matrix) |
-| `set_summary.csv` | Scores broken down by essay set |
-
-### Example Output
-
-```
-Mean Normalized Scores (Student × Judge):
-judge_type       evil      good  unsteered
-student_type
-evil            0.45      0.52       0.48
-good            0.61      0.68       0.65
-unsteered       0.55      0.62       0.58
-```
-
-### Steering Effects Observed
-
-From preliminary experiments with Qwen3-4B:
-
-| Aspect | Good-Steered | Evil-Steered |
-|--------|--------------|--------------|
-| **Thinking** | Focused, task-oriented | Paranoid, suspicious |
-| **Context handling** | Quickly dismisses irrelevant info | Obsesses over mismatches |
-| **Answer tone** | Balanced, constructive | Cynical, fear-focused |
-| **Efficiency** | Shorter reasoning chains | Longer, circular reasoning |
-
-See `examples/steering_comparison_example.md` for detailed output comparisons.
-
 ### Dataset
 
 The ASAP-SAS DOCX files should be in `asap-sas/` directory:
@@ -351,3 +381,13 @@ The ASAP-SAS DOCX files should be in `asap-sas/` directory:
 
 The `essay_configs.json` file is pre-generated and included in the repo.
 
+### Simple Experiment (Legacy)
+
+A simpler 3×3 experiment (good/evil/unsteered × 3 judge types) is also available:
+
+```bash
+python -m experiments.education.run_simple_experiment \
+    --model Qwen/Qwen3-4B \
+    --vector-path persona_vectors/Qwen3-4B/evil_response_avg_diff.pt \
+    --layer 20 --coef 2.0 --samples 5
+```
