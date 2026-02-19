@@ -344,6 +344,36 @@ python -m experiments.education.generate_report \
 
 This produces `report/analysis_report.md` with plots covering effect sizes, score distributions, judge accuracy, trait clustering, and cherry-picked examples.
 
+#### Step 4: Generate Cross-Model Comparison Report
+
+After running experiments for multiple models, generate a comparative analysis:
+
+```bash
+python experiments/education/generate_cross_model_report.py
+```
+
+This auto-discovers all `multi_trait_*` result directories and produces `experiments/education/results/cross_model_comparison/` containing:
+
+| Output | Description |
+|--------|-------------|
+| `cross_model_report.md` | Full comparison report with tables and findings |
+| `combined_effects.csv` | Per-trait effect sizes across all models |
+| `combined_judge_qwk.csv` | Judge QWK scores across all models |
+| `plots/` | 7 comparative visualizations |
+
+**Key cross-model findings (Qwen3-4B vs Qwen3-32B vs gpt-oss-20b):**
+
+| Metric | Qwen3-4B | Qwen3-32B | gpt-oss-20b |
+|--------|----------|-----------|-------------|
+| Mean vulnerability (\|pos effect\|) | 0.172 | 0.021 | 0.123 |
+| Most destructive trait | humorous (-0.42) | hallucinating (-0.06) | evil (-0.44) |
+| Unsteered judge QWK | 0.184 | 0.253 | 0.239 |
+| OpenAI judge QWK | 0.500 | 0.518 | 0.468 |
+
+- **Smaller models are more vulnerable**: Qwen3-4B is 8× more susceptible to steering than Qwen3-32B
+- **The most destructive trait varies by model**: humorous (4B), hallucinating (32B), evil (20B)
+- **Qwen3-32B is the best unsteered judge** but all local models lag far behind OpenAI
+
 ### Pre-Built Pipeline Script
 
 For convenience, `run_gpt_oss_pipeline.sh` runs the entire pipeline end-to-end for gpt-oss-20b. Adapt it for other models by changing the `MODEL`, `SHORT_NAME`, and batch size variables.
