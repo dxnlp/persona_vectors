@@ -26,4 +26,5 @@ asap-sas/asap-sas.zip
 experiments/education/results/*
 !experiments/education/results/simple_*/
 !experiments/education/results/multi_trait_*/
+!experiments/education/results/cross_model_comparison/
 data/
