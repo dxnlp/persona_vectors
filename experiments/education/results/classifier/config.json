@@ -1,0 +1,11 @@
+{
+  "classifier_model": "gpt-5.2",
+  "max_concurrent": 8,
+  "max_answer_chars": 3000,
+  "models": [
+    "Qwen3-4B",
+    "Qwen3-32B",
+    "gpt-oss-20b"
+  ],
+  "test_mode": false
+}
