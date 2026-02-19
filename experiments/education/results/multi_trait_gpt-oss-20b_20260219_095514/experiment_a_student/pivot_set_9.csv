@@ -1,0 +1,16 @@
+student_type,openai,unsteered
+apathetic_neg,0.55,0.5
+apathetic_pos,0.75,0.6
+evil_neg,0.6,0.75
+evil_pos,0.25,0.4
+hallucinating_neg,0.8,0.9
+hallucinating_pos,0.5,0.2
+humorous_neg,0.5,0.5
+humorous_pos,0.55,0.5
+impolite_neg,0.65,0.65
+impolite_pos,0.8,0.85
+optimistic_neg,0.75,0.7
+optimistic_pos,0.55,0.55
+sycophantic_neg,0.85,0.9
+sycophantic_pos,0.5,0.65
+unsteered,0.5,0.65

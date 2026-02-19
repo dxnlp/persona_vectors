@@ -45,6 +45,36 @@ class _Float32CastProcessor(LogitsProcessor):
 _FLOAT32_PROCESSORS = LogitsProcessorList([_Float32CastProcessor()])
 
 
+def _extract_final_channel(token_ids, tokenizer):
+    """Extract content from the 'final' channel for gpt-oss-20b style models.
+
+    gpt-oss-20b uses a channel-based format:
+      <|channel|>analysis<|message|>thinking...<|end|>
+      <|start|>assistant<|channel|>final<|message|>answer...<|end|>
+
+    Returns (thinking, final_text) if channel markers found, else (None, None).
+    """
+    raw = tokenizer.decode(token_ids, skip_special_tokens=False)
+
+    final_marker = "<|channel|>final<|message|>"
+    if final_marker not in raw:
+        return None, None
+
+    # Extract analysis (thinking) content
+    analysis_marker = "<|channel|>analysis<|message|>"
+    thinking = ""
+    if analysis_marker in raw:
+        after_analysis = raw.split(analysis_marker, 1)[1]
+        thinking = after_analysis.split("<|end|>")[0].strip()
+
+    # Extract final content
+    final_part = raw.split(final_marker, 1)[1]
+    final_text = final_part.split("<|end|>")[0]
+    final_text = final_text.split("<|return|>")[0].strip()
+
+    return thinking, final_text
+
+
 @dataclass
 class GeneratedAnswer:
     """A generated answer from a student LLM."""
@@ -148,19 +178,26 @@ Write your answer below:"""
                 outputs = self.model.generate(**inputs, **generate_kwargs)
 
         prompt_len = inputs["input_ids"].shape[1]
-        generated_text = self.tokenizer.decode(outputs[0][prompt_len:], skip_special_tokens=True)
+        output_ids = outputs[0][prompt_len:]
 
-        # Separate thinking from answer
-        thinking = ""
-        answer = generated_text
-        if "<think>" in generated_text:
-            parts = generated_text.split("</think>")
-            if len(parts) > 1:
-                thinking = parts[0].replace("<think>", "").strip()
-                answer = parts[-1].strip()
-            else:
-                thinking = generated_text.split("<think>")[-1].strip()
-                answer = ""
+        # Try channel-based parsing first (gpt-oss-20b)
+        thinking_ch, answer_ch = _extract_final_channel(output_ids, self.tokenizer)
+        if answer_ch is not None:
+            thinking = thinking_ch
+            answer = answer_ch
+        else:
+            # Fall back to Qwen3 <think> parsing
+            generated_text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+            thinking = ""
+            answer = generated_text
+            if "<think>" in generated_text:
+                parts = generated_text.split("</think>")
+                if len(parts) > 1:
+                    thinking = parts[0].replace("<think>", "").strip()
+                    answer = parts[-1].strip()
+                else:
+                    thinking = generated_text.split("<think>")[-1].strip()
+                    answer = ""
 
         return GeneratedAnswer(
             set_id=set_id,
@@ -252,19 +289,28 @@ Write your answer below:"""
                     prompt_len = inputs["input_ids"].shape[1]
 
                     for j, (set_id, sample_id, student_type) in enumerate(batch_items):
-                        generated_text = self.tokenizer.decode(
-                            outputs[j][prompt_len:], skip_special_tokens=True,
-                        )
-                        thinking = ""
-                        answer = generated_text
-                        if "<think>" in generated_text:
-                            parts = generated_text.split("</think>")
-                            if len(parts) > 1:
-                                thinking = parts[0].replace("<think>", "").strip()
-                                answer = parts[-1].strip()
-                            else:
-                                thinking = generated_text.split("<think>")[-1].strip()
-                                answer = ""
+                        output_ids = outputs[j][prompt_len:]
+
+                        # Try channel-based parsing first (gpt-oss-20b)
+                        thinking_ch, answer_ch = _extract_final_channel(output_ids, self.tokenizer)
+                        if answer_ch is not None:
+                            thinking = thinking_ch
+                            answer = answer_ch
+                        else:
+                            # Fall back to Qwen3 <think> parsing
+                            generated_text = self.tokenizer.decode(
+                                output_ids, skip_special_tokens=True,
+                            )
+                            thinking = ""
+                            answer = generated_text
+                            if "<think>" in generated_text:
+                                parts = generated_text.split("</think>")
+                                if len(parts) > 1:
+                                    thinking = parts[0].replace("<think>", "").strip()
+                                    answer = parts[-1].strip()
+                                else:
+                                    thinking = generated_text.split("<think>")[-1].strip()
+                                    answer = ""
 
                         essay_set = ESSAY_SETS[set_id]
                         results.append(GeneratedAnswer(
@@ -347,7 +393,8 @@ Respond with ONLY a single integer. No explanation."""
         ]
 
         prompt_text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            messages, tokenize=False, add_generation_prompt=True,
+            enable_thinking=False, reasoning_effort="low",
         )
 
         inputs = self.tokenizer(prompt_text, return_tensors="pt")
@@ -364,20 +411,27 @@ Respond with ONLY a single integer. No explanation."""
                 ):
                     outputs = self.model.generate(
                         **inputs,
-                        max_new_tokens=10,
+                        max_new_tokens=128,
                         do_sample=False,
                         pad_token_id=self.tokenizer.pad_token_id,
                     )
             else:
                 outputs = self.model.generate(
                     **inputs,
-                    max_new_tokens=10,
+                    max_new_tokens=128,
                     do_sample=False,
                     pad_token_id=self.tokenizer.pad_token_id,
                 )
 
         prompt_len = inputs["input_ids"].shape[1]
-        response = self.tokenizer.decode(outputs[0][prompt_len:], skip_special_tokens=True).strip()
+        output_ids = outputs[0][prompt_len:]
+
+        # Try channel-based parsing first (gpt-oss-20b)
+        _, final_text = _extract_final_channel(output_ids, self.tokenizer)
+        if final_text is not None:
+            response = final_text
+        else:
+            response = self.tokenizer.decode(output_ids, skip_special_tokens=True).strip()
 
         # Parse score from response
         numbers = re.findall(r'\d+', response)
@@ -443,7 +497,7 @@ Respond with ONLY a single integer. No explanation."""
             ]
             prompt_text = self.tokenizer.apply_chat_template(
                 messages, tokenize=False, add_generation_prompt=True,
-                enable_thinking=False,
+                enable_thinking=False, reasoning_effort="low",
             )
             prompt_texts.append(prompt_text)
 
@@ -476,7 +530,7 @@ Respond with ONLY a single integer. No explanation."""
                     with torch.no_grad():
                         outputs = self.model.generate(
                             **inputs,
-                            max_new_tokens=10,
+                            max_new_tokens=128,
                             do_sample=False,
                             pad_token_id=self.tokenizer.pad_token_id,
                         )
@@ -484,9 +538,16 @@ Respond with ONLY a single integer. No explanation."""
                     prompt_len = inputs["input_ids"].shape[1]
 
                     for j, answer in enumerate(batch_answers):
-                        response = self.tokenizer.decode(
-                            outputs[j][prompt_len:], skip_special_tokens=True,
-                        ).strip()
+                        output_ids = outputs[j][prompt_len:]
+
+                        # Try channel-based parsing (gpt-oss-20b)
+                        _, final_text = _extract_final_channel(output_ids, self.tokenizer)
+                        if final_text is not None:
+                            response = final_text
+                        else:
+                            response = self.tokenizer.decode(
+                                output_ids, skip_special_tokens=True,
+                            ).strip()
 
                         essay_set = ESSAY_SETS[answer.set_id]
                         min_score, max_score = essay_set["score_range"]

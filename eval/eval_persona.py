@@ -34,6 +34,27 @@ except Exception as e:
     logging.warning(f"Could not set up OpenAI credentials: {e}")
     config = None
 
+def _extract_final_channel_text(text):
+    """Extract content from the 'final' channel for gpt-oss-20b style models.
+
+    After vLLM/HF decoding with skip_special_tokens=True, gpt-oss-20b output
+    looks like: "analysisThinking text...assistantfinalActual answer..."
+
+    Returns the final channel text if found, otherwise returns the original text.
+    """
+    marker = "assistantfinal"
+    if marker in text:
+        return text.split(marker, 1)[1].strip()
+    # Also try raw token format (skip_special_tokens=False)
+    raw_marker = "<|channel|>final<|message|>"
+    if raw_marker in text:
+        final_part = text.split(raw_marker, 1)[1]
+        final_part = final_part.split("<|end|>")[0]
+        final_part = final_part.split("<|return|>")[0]
+        return final_part.strip()
+    return text
+
+
 def sample_steering(model, tokenizer, conversations,  vector, layer, coef, bs=20, top_p=1, max_tokens=1000, temperature=1, min_tokens=1, steering_type="response"):
     tokenizer.padding_side = "left"
     if tokenizer.pad_token is None:
@@ -53,7 +74,7 @@ def sample_steering(model, tokenizer, conversations,  vector, layer, coef, bs=20
             with torch.no_grad():
                 output = model.generate(**tokenized_batch, do_sample=(temperature > 0), temperature=temperature, top_p=top_p, max_new_tokens=max_tokens,use_cache=True, min_new_tokens=min_tokens, logits_processor=_FLOAT32_PROCESSORS)
         prompt_len = tokenized_batch["input_ids"].shape[1]
-        output = [tokenizer.decode(o[prompt_len:], skip_special_tokens=True) for o in output]
+        output = [_extract_final_channel_text(tokenizer.decode(o[prompt_len:], skip_special_tokens=True)) for o in output]
         outputs.extend(output)
     return prompts, outputs
 
@@ -114,7 +135,7 @@ def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperatur
             completions = model.generate(texts, **generate_kwargs, lora_request=LoRARequest("default", 1, lora_path=lora_path))
         else:
             completions = model.generate(texts, **generate_kwargs)
-        answers = [completion.outputs[0].text for completion in completions]
+        answers = [_extract_final_channel_text(completion.outputs[0].text) for completion in completions]
     else:
         # HuggingFace inference path (CPU/GPU)
         tokenizer.padding_side = "left"
@@ -143,7 +164,7 @@ def sample(model, tokenizer, conversations, top_p=1, max_tokens=1000, temperatur
                     logits_processor=_FLOAT32_PROCESSORS,
                 )
             prompt_len = tokenized_batch["input_ids"].shape[1]
-            batch_answers = [tokenizer.decode(o[prompt_len:], skip_special_tokens=True) for o in output]
+            batch_answers = [_extract_final_channel_text(tokenizer.decode(o[prompt_len:], skip_special_tokens=True)) for o in output]
             answers.extend(batch_answers)
 
     return texts, answers
